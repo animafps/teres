@@ -2,7 +2,6 @@ use crate::rendering::{Render, Rendering};
 use crate::Cli;
 use std::process::Command;
 use std::vec;
-use text_io::read;
 
 pub fn run(cli_args: Cli) {
     let using_ui = !cli_args.noui;
@@ -20,11 +19,8 @@ pub fn run(cli_args: Cli) {
             println!("{}", line);
         }
         println!();
-        let word: String = read!();
-        println!("{}", word);
     }
 
-    println!("{}", used_installer());
     if !used_installer() {
         let ffmepg = Command::new("ffmpeg").arg("-v").output();
 
@@ -86,7 +82,6 @@ pub fn create_temp_path(video_path: std::path::PathBuf) -> std::path::PathBuf {
 pub fn used_installer() -> bool {
     let path = std::env::current_exe().unwrap();
     let parent_path = path.parent().unwrap();
-    println!("{}", parent_path.display());
     parent_path.join("lib/vapoursynth/VSPipe.exe").exists()
         && parent_path.join("lib/ffmpeg/ffmpeg.exe").exists()
 }

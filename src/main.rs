@@ -4,6 +4,7 @@ mod config;
 mod helpers;
 mod rendering;
 mod script_handler;
+use human_panic::setup_panic;
 
 /// Add motion blur to videos
 #[derive(Parser)]
@@ -23,6 +24,7 @@ pub struct Cli {
 }
 
 fn main() {
+    setup_panic!();
     let args = Cli::parse();
     blur::run(args);
 }

@@ -82,17 +82,17 @@ contrast: 1
 
 # advanced rendering
 gpu: false
-gpu_type: #nvidia/amd/intel nvidia
+gpu_type: nvidia #nvidia/amd/intel
 deduplicate: false
 custom_ffmpeg_filters: 
 
 # advanced blur
 blur_weighting_gaussian_std_dev: 2
 blur_weighting_triangle_reverse: false
-blur_weighting_bound: [0,2]
+blur_weighting_bound: [0, 2]
 
 # advanced interpolation
-interpolation_program: #svp/rife/rife-ncnn svp 
+interpolation_program: svp #svp/rife/rife-ncnn
 interpolation_speed: default
 interpolation_tuning: default
 interpolation_algorithm: default",
