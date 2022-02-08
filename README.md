@@ -1,1 +1,29 @@
 # blur
+
+https://github.com/f0e/blur in rust
+
+## Warning - Preproduction
+
+This is still in the early stages of development so not much support can be provided and no guarentee on performance and bugs/issues that you may run into
+if you do choose to use it and run into said issues then do create a issue here on github or send me(Anima) a dm on any social media
+
+## Usage
+
+Currently it can only be run in CLI mode 
+
+E.G.
+```powershell
+./blur.exe -n demo.mp4
+```
+
+Most of the CLI args are not functional as well
+
+### Config
+
+When first run it creates a config file in your home folder. `C:/users/user/blur-config.yml` for example which allows you to change the settings for the interpolation and enconding processes
+
+again same thing applies and that being that not all the properties do anything or sometimes break the program.
+
+## License
+
+blur by anima is licensed under GPL-3.0-or-later see [LICENSE](LICENSE) for more details
