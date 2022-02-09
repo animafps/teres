@@ -1,12 +1,11 @@
 use crate::blur::{create_temp_path, used_installer};
 use crate::config::Config;
-use crate::helpers::{clean, exec};
+use crate::helpers::{self, clean, exec};
 use crate::script_handler::create;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::vec::Vec;
 
 pub struct Render {
-    video_name: String,
     video_path: PathBuf,
     video_folder: PathBuf,
 
@@ -17,39 +16,28 @@ pub struct Render {
 }
 
 impl Render {
-    pub fn new(input_path: PathBuf, output_path: Option<String>, using_ui: bool) -> Render {
-        let video_folder = input_path.parent().unwrap().to_path_buf();
+    pub fn new(input_path: PathBuf, output_path: Option<String>) -> Option<Render> {
+        let video_folder = input_path.parent()?.to_path_buf();
         let video_path = input_path;
 
-        let video_name = video_path
-            .file_stem()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
+        let video_name = video_path.file_stem()?.to_str()?.to_string();
 
-        let input_filename = video_path
-            .file_name()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
+        let input_filename = video_path.file_name()?.to_str()?.to_string();
         let settings = Config::parse();
         let output_filepath;
         if output_path.is_none() {
             output_filepath = video_folder.join(format!("{}_blur.mp4", video_name));
         } else {
-            output_filepath = PathBuf::from(output_path.unwrap());
+            output_filepath = PathBuf::from(output_path?);
         }
 
-        Render {
+        Some(Render {
             video_path,
-            video_name,
             video_folder,
             input_filename,
             output_filepath,
             settings,
-        }
+        })
     }
 }
 
@@ -80,85 +68,93 @@ impl Rendering {
 
     pub fn render_videos(&mut self) {
         if self.renders_queued {
+            let mut threads = vec![];
             for render in self.queue.iter() {
+                println!("Processing {}", render.input_filename);
                 let output_filepath = render.output_filepath.clone();
-                let input_filename = render.input_filename.clone();
                 let settings = render.settings.clone();
                 let video_path = render.video_path.clone();
                 let video_folder = render.video_folder.clone();
-                let video_name = render.video_name.clone();
                 if render != self.queue.last().unwrap() {
-                    std::thread::spawn(move || {
+                    threads.push(std::thread::spawn(move || {
                         Rendering::render_video(
-                            input_filename,
                             output_filepath,
                             settings,
                             video_path,
                             video_folder,
-                            video_name,
-                        );
-                    });
+                        )
+                        .expect("Render thread failed");
+                    }));
                 } else {
-                    Rendering::render_video(
-                        input_filename,
-                        output_filepath,
-                        settings,
-                        video_path,
-                        video_folder,
-                        video_name,
-                    );
+                    Rendering::render_video(output_filepath, settings, video_path, video_folder)
+                        .expect("Render failed");
                 }
             }
-            clean();
+            for thread in threads {
+                thread.join().expect("The thread being joined has panicked");
+            }
             self.queue.clear();
             self.renders_queued = false;
         }
     }
 
     pub fn render_video(
-        input_filename: String,
         output_filepath: PathBuf,
         settings: Config,
         video_path: PathBuf,
         video_folder: PathBuf,
-        video_name: String,
-    ) {
-        println!("Rendering {}", video_name);
-
-        let temp_path = create_temp_path(video_folder);
+    ) -> Result<(), std::io::Error> {
+        let temp_path = create_temp_path(video_folder)?;
 
         let video_clone = video_path.clone();
         let settings_clone = settings.clone();
-        let script_path = create(temp_path, video_path, settings);
+        let script_path = create(temp_path, &video_path, settings);
 
         let ffmpeg_settings = Rendering::build_ffmpeg_command(
-            script_path,
-            video_clone,
-            output_filepath,
+            &script_path,
+            &video_clone,
+            &output_filepath,
             settings_clone,
+        )?;
+        let process = exec(ffmpeg_settings);
+        if !process.success() {
+            print!("Processing failed");
+            helpers::exit(0);
+        }
+        print!(
+            "Finished processing {} to {}",
+            video_path.file_name().unwrap().to_str().unwrap(),
+            output_filepath.display()
         );
-        exec(ffmpeg_settings);
+        clean(video_clone, script_path);
+        Ok(())
     }
 
     pub fn build_ffmpeg_command(
-        script_path: PathBuf,
-        video_path: PathBuf,
-        output_path: PathBuf,
+        script_path: &Path,
+        video_path: &Path,
+        output_path: &Path,
         settings: Config,
-    ) -> CommandWithArgs {
+    ) -> Result<CommandWithArgs, std::io::Error> {
         let mut vspipe_path = "vspipe";
         let mut ffmpeg_path = "ffmpeg";
         let vspipe_exe;
         let ffmpeg_exe;
 
-        if used_installer() {
-            let exepath = std::env::current_exe().unwrap();
+        if used_installer()? {
+            let exepath = std::env::current_exe()?;
             let path = exepath.parent().unwrap();
-            println!("{}", path.display());
-            vspipe_exe = format!("{}/lib/vapoursynth/VSPipe.exe", path.to_str().unwrap());
-            vspipe_path = vspipe_exe.as_str();
-            ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg.exe", path.to_str().unwrap());
-            ffmpeg_path = ffmpeg_exe.as_str();
+            if path.join("lib/ffmpeg/ffmpeg").exists() {
+                vspipe_exe = format!("{}/lib/vapoursynth/vspipe", path.to_str().unwrap());
+                vspipe_path = vspipe_exe.as_str();
+                ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg", path.to_str().unwrap());
+                ffmpeg_path = ffmpeg_exe.as_str();
+            } else {
+                vspipe_exe = format!("{}/lib/vapoursynth/VSPipe.exe", path.to_str().unwrap());
+                vspipe_path = vspipe_exe.as_str();
+                ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg.exe", path.to_str().unwrap());
+                ffmpeg_path = ffmpeg_exe.as_str();
+            }
         }
 
         let pipe_args = vec![
@@ -167,19 +163,20 @@ impl Rendering {
             "-".to_string(),
         ];
 
-        let mut ffmpeg_command = String::new();
-
-        ffmpeg_command += "-loglevel error -hide_banner -stats";
-
-        // input
-        ffmpeg_command += " -i pipe:"; // piped output from video script
-        ffmpeg_command += format!(
-            " -i {}",
-            video_path.to_str().unwrap().trim_start_matches("\\\\?\\")
-        )
-        .as_str(); // original video (for audio)
-        ffmpeg_command += " -map 0:v -map 1:a?"; // copy video from first input, copy audio from second
-
+        let mut ffmpeg_command = vec![
+            "-loglevel",
+            "error",
+            "-hide_banner",
+            "-stats",
+            "-i",
+            "pipe:",
+            "-i",
+            video_path.to_str().unwrap().trim_start_matches("\\\\?\\"),
+            "-map",
+            "0:v",
+            "-map",
+            "1:a?",
+        ];
         // audio filters
         let mut audio_filters = String::new();
         if settings.input_timescale != 1.0 {
@@ -199,63 +196,77 @@ impl Rendering {
                 audio_filters += format!("atempo={}", settings.output_timescale).as_str();
             }
         }
+
+        let formatted_audio;
         if !audio_filters.is_empty() {
-            ffmpeg_command += format!(" -af {}", audio_filters).as_str();
+            ffmpeg_command.push("-af");
+            formatted_audio = audio_filters;
+            ffmpeg_command.push(formatted_audio.as_str());
         }
 
-        if !settings.custom_ffmpeg_filters.is_empty() {
-            ffmpeg_command += format!(" {}", settings.custom_ffmpeg_filters).as_str();
+        let quality = &settings.quality.to_string();
+        if settings.custom_ffmpeg_filters != "~" {
+            ffmpeg_command.push(&settings.custom_ffmpeg_filters);
         } else {
             // video format
             if settings.gpu {
                 if settings.gpu_type.to_lowercase() == "nvidia" {
-                    ffmpeg_command +=
-                        format!(" -c:v h264_nvenc -preset p7 -qp {}", settings.quality).as_str();
+                    ffmpeg_command.push("-c:v");
+                    ffmpeg_command.push("nvenc_h264");
+                    ffmpeg_command.push("-preset");
+                    ffmpeg_command.push("p7");
+                    ffmpeg_command.push("-qp");
+                    ffmpeg_command.push(quality);
                 } else if settings.gpu_type.to_lowercase() == "amd" {
-                    ffmpeg_command += format!(
-                        " -c:v h264_amf -qp_i {} -qp_b {} -qp_p {} -quality quality",
-                        settings.quality, settings.quality, settings.quality,
-                    )
-                    .as_str();
+                    ffmpeg_command.push("-c:v");
+                    ffmpeg_command.push("h264_amf");
+                    ffmpeg_command.push("-qp_i");
+                    ffmpeg_command.push(quality);
+                    ffmpeg_command.push("-qp_b");
+                    ffmpeg_command.push(quality);
+                    ffmpeg_command.push("-qp_p");
+                    ffmpeg_command.push(quality);
+                    ffmpeg_command.push("-quality");
+                    ffmpeg_command.push("quality");
                 } else if settings.gpu_type.to_lowercase() == "intel" {
-                    ffmpeg_command += format!(
-                        " -c:v h264_qsv -global_quality {} -preset veryslow",
-                        settings.quality,
-                    )
-                    .as_str();
+                    ffmpeg_command.append(&mut vec![
+                        "-c:v",
+                        "h264_qsv",
+                        "-global_quality",
+                        quality,
+                        "-preset",
+                        "veryslow",
+                    ]);
                 }
             } else {
-                ffmpeg_command += format!(
-                    " -c:v libx264 -pix_fmt yuv420p -preset superfast -crf {}",
-                    settings.quality,
-                )
-                .as_str();
+                ffmpeg_command.append(&mut vec![
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-preset",
+                    "superfast",
+                    "-crf",
+                    quality,
+                ]);
             }
 
             // audio format
-            ffmpeg_command += " -c:a aac -b:a 320k";
+            ffmpeg_command.append(&mut vec!["-c:a", "aac", "-b:a", "320k"]);
 
             // extra
-            ffmpeg_command += " -movflags +faststart";
+            ffmpeg_command.append(&mut vec!["-movflags", "+faststart"]);
         }
 
         // output
-        ffmpeg_command += format!(
-            " {}",
-            output_path.to_str().unwrap().trim_start_matches("\\\\?\\")
-        )
-        .as_str();
-        let ffmpeg_args: Vec<String> = ffmpeg_command
-            .split(' ')
-            .map(|x| x.to_string())
-            .filter(|n| n != "~")
-            .collect();
-        CommandWithArgs {
+        ffmpeg_command.push(output_path.to_str().unwrap().trim_start_matches("\\\\?\\"));
+        let ffmpeg_args: Vec<String> = ffmpeg_command.iter().map(|n| n.to_string()).collect();
+        Ok(CommandWithArgs {
             ffmpeg_exe: ffmpeg_path.to_string(),
             ffmpeg_args,
 
             vspipe_exe: vspipe_path.to_string(),
             vspipe_args: pipe_args,
-        }
+        })
     }
 }

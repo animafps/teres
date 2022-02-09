@@ -15,9 +15,6 @@ pub struct Cli {
     /// Output file name(s)
     #[clap(short, long)]
     output: Option<String>,
-    /// Verbose mode
-    #[clap(short, long)]
-    verbose: bool,
     /// Disable user interface
     #[clap(short, long)]
     noui: bool,
@@ -25,6 +22,9 @@ pub struct Cli {
 
 fn main() {
     setup_panic!();
+
     let args = Cli::parse();
     blur::run(args);
+
+    helpers::exit(0);
 }

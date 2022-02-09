@@ -1,7 +1,10 @@
 use crate::config::Config;
-use std::path::PathBuf;
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
-pub fn create(temp_path: PathBuf, video_path: PathBuf, settings: Config) -> PathBuf {
+pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBuf {
     let script_filename = temp_path.join(rand::random::<u16>().to_string() + ".vpk");
 
     let mut script = "from vapoursynth import core\nimport vapoursynth as vs\nimport havsfunc as haf\nimport adjust\nimport weighting\n".to_owned();
@@ -18,13 +21,23 @@ pub fn create(temp_path: PathBuf, video_path: PathBuf, settings: Config) -> Path
     if extentension != ".avi" {
         script += format!(
             "video = core.ffms2.Source(source=\"{}\")\n",
-            video_path.to_str().unwrap().replace("\\", "\\\\")
+            video_path
+                .canonicalize()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .replace("\\", "\\\\")
         )
         .as_str();
     } else {
         script += format!(
             "video = core.avisource.AVISource(\"{}\")",
-            video_path.to_str().unwrap()
+            video_path
+                .canonicalize()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .replace("\\", "\\\\")
         )
         .as_str();
         script += "video = core.fmtc.matrix(clip=video, mat=\"601\", col_fam=vs.YUV, bits=16)\n";
@@ -48,13 +61,13 @@ pub fn create(temp_path: PathBuf, video_path: PathBuf, settings: Config) -> Path
         if settings.interpolation_program == "rife" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS)\n";
             script += format!("while videofps < {}:\n", settings.interpolated_fps).as_str();
-            script += "    video = RIFE(video)\n";
+            script += " video = RIFE(video)\n";
             script += "video = core.resize.Bicubic(video, format=vs.YUV402P8, matrix_x=\"709\")\n"
         } else if settings.interpolation_program == "rife-ncnn" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS)\n";
 
             script += format!("while videofps < {}:\n", settings.interpolated_fps).as_str();
-            script += "    video = core.rife.RIFE(video)\n";
+            script += " video = core.rife.RIFE(video)\n";
 
             script += "video = core.resize.Bicubic(video, format=vs.YUV402P8, matrix_x=\"709\")\n"
         } else {
@@ -104,8 +117,8 @@ pub fn create(temp_path: PathBuf, video_path: PathBuf, settings: Config) -> Path
         .as_str();
 
         script += "if blended_frames > 0:\n";
-        script += "    if blended_frames % 2 == 0:\n";
-        script += "        blended_frames += 1\n";
+        script += "	if blended_frames % 2 == 0:\n";
+        script += "		blended_frames += 1\n";
 
         let triangle_reverse_bool;
         if settings.blur_weighting_triangle_reverse {
@@ -114,7 +127,61 @@ pub fn create(temp_path: PathBuf, video_path: PathBuf, settings: Config) -> Path
             triangle_reverse_bool = "False";
         }
 
-        script += "    video = core.frameblender.FrameBlend(video, weighting.equal(blended_frames), True)\n";
+        let mut weighting_bound = String::from("[");
+        weighting_bound += &settings
+            .blur_weighting_bound
+            .iter()
+            .map(|a| a.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        weighting_bound += "]";
+        let guassian = format!(
+            "weighting.gaussian(blended_frames, {}, {})",
+            settings.blur_weighting_gaussian_std_dev, weighting_bound,
+        );
+        let gaussian_sym = format!(
+            "weighting.gaussianSym(blended_frames, {}, {})",
+            settings.blur_weighting_gaussian_std_dev, weighting_bound
+        );
+        let pyramid = format!(
+            "weighting.pyramid(blended_frames, {})",
+            triangle_reverse_bool
+        );
+        let custom_weight = format!(
+            "weighting.divide(blended_frames, {})",
+            settings.blur_weighting
+        );
+        let custom_function = format!(
+            "weighting.custom(blended_frames, '{}', {})",
+            settings.blur_weighting, weighting_bound
+        );
+        let weighting_functions = HashMap::from([
+            ("equal", "weighting.equal(blended_frames)"),
+            ("gaussian", guassian.as_str()),
+            ("gaussian_sym", gaussian_sym.as_str()),
+            ("pyramid", pyramid.as_str()),
+            ("pyramid_sym", "weighting.pyramid(blended_frames)"),
+            ("custom_weight", custom_weight.as_str()),
+            ("custom_function", custom_function.as_str()),
+        ]);
+
+        let mut weighting = settings.blur_weighting;
+        if !weighting_functions.get(weighting.as_str()).is_some() {
+            // check if it's a custom weighting function
+            if weighting.starts_with('[') && weighting.ends_with(']') {
+                weighting = "custom_weight".to_string();
+            } else {
+                weighting = "custom_function".to_string();
+            }
+        }
+
+        script += format!(
+            "	weights = {}\n",
+            weighting_functions.get(weighting.as_str()).unwrap()
+        )
+        .as_str();
+
+        script += "	video = core.frameblender.FrameBlend(video, weights, True)\n";
 
         script += format!(
             "video = haf.ChangeFPS(video, {})\n",

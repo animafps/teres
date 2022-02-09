@@ -1,6 +1,6 @@
 # blur
 
-https://github.com/f0e/blur in rust
+<https://github.com/f0e/blur> in rust
 
 ## Warning - Preproduction
 
@@ -9,14 +9,17 @@ if you do choose to use it and run into said issues then do create a issue here 
 
 ## Usage
 
-Currently it can only be run in CLI mode 
+Run the program
 
-E.G.
+### Cli
+
+blur can be run from the command line
+
+e.g.
+
 ```powershell
 ./blur.exe -n demo.mp4
 ```
-
-Most of the CLI args are not functional as well
 
 ### Config
 
