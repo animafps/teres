@@ -71,13 +71,12 @@ pub fn run(cli_args: Cli) -> Option<()> {
             .collect();
     }
 
-    let output = cli_args.output;
     for video in files {
         if !video.exists() {
             println!("Video {} does not exist", video.display());
             helpers::exit(1);
         }
-        let render = rendering::Render::new(video, output.clone());
+        let render = rendering::Render::new(video);
         rendering.queue_render(render?)
     }
 

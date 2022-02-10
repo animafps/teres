@@ -20,7 +20,7 @@ pub struct Render {
 }
 
 impl Render {
-    pub fn new(input_path: PathBuf, output_path: Option<String>) -> Option<Render> {
+    pub fn new(input_path: PathBuf) -> Option<Render> {
         let video_folder = input_path.parent()?.to_path_buf();
         let video_path = input_path;
 
@@ -28,12 +28,7 @@ impl Render {
 
         let input_filename = video_path.file_name()?.to_str()?.to_string();
         let settings = Config::parse();
-        let output_filepath;
-        if output_path.is_none() {
-            output_filepath = video_folder.join(format!("{}_blur.mp4", video_name));
-        } else {
-            output_filepath = PathBuf::from(output_path?);
-        }
+        let output_filepath = video_folder.join(format!("{}_blur.mp4", video_name));
 
         Some(Render {
             video_path,
@@ -135,7 +130,6 @@ impl Rendering {
             ffmpeg_settings,
             progress_bar,
             video_clone
-                .clone()
                 .file_name()
                 .unwrap()
                 .to_str()

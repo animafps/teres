@@ -10,11 +10,8 @@ use human_panic::setup_panic;
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 pub struct Cli {
-    /// Input file name(s)
+    /// Input file name(s) (comma separated)
     input: Option<String>,
-    /// Output file name(s)
-    #[clap(short, long)]
-    output: Option<String>,
     /// Disable user interface
     #[clap(short, long)]
     noui: bool,
