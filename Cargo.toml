@@ -15,3 +15,5 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 human-panic = "1.0.3"
 rfd = "0.7.0"
+indicatif = "0.17.0-rc.2"
+regex = "1.5.4"

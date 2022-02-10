@@ -166,7 +166,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         ]);
 
         let mut weighting = settings.blur_weighting;
-        if !weighting_functions.get(weighting.as_str()).is_some() {
+        if weighting_functions.get(weighting.as_str()).is_none() {
             // check if it's a custom weighting function
             if weighting.starts_with('[') && weighting.ends_with(']') {
                 weighting = "custom_weight".to_string();

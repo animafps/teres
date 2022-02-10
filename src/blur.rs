@@ -16,11 +16,11 @@ pub fn run(cli_args: Cli) -> Option<()> {
         " _/    _/  _/  _/    _/  _/        ",
         "_/_/_/    _/    _/_/_/  _/         ",
     ];
-    println!("");
+    println!();
     for (_, line) in art.iter().enumerate() {
         println!("{}", line);
     }
-    println!("");
+    println!();
 
     if cli_args.input.is_none() && !using_ui {
         println!("No video(s) inputted");

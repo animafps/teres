@@ -1,8 +1,12 @@
+use indicatif::MultiProgress;
+
 use crate::blur::{create_temp_path, used_installer};
 use crate::config::Config;
 use crate::helpers::{self, clean, exec};
 use crate::script_handler::create;
 use std::path::{Path, PathBuf};
+
+use std::sync::Arc;
 use std::vec::Vec;
 
 pub struct Render {
@@ -68,6 +72,7 @@ impl Rendering {
 
     pub fn render_videos(&mut self) {
         if self.renders_queued {
+            let m = Arc::new(MultiProgress::new());
             let mut threads = vec![];
             for render in self.queue.iter() {
                 println!("Processing {}", render.input_filename);
@@ -75,6 +80,7 @@ impl Rendering {
                 let settings = render.settings.clone();
                 let video_path = render.video_path.clone();
                 let video_folder = render.video_folder.clone();
+                let m_clone = m.clone();
                 if render != self.queue.last().unwrap() {
                     threads.push(std::thread::spawn(move || {
                         Rendering::render_video(
@@ -82,16 +88,24 @@ impl Rendering {
                             settings,
                             video_path,
                             video_folder,
+                            m_clone,
                         )
                         .expect("Render thread failed");
                     }));
                 } else {
-                    Rendering::render_video(output_filepath, settings, video_path, video_folder)
-                        .expect("Render failed");
+                    Rendering::render_video(
+                        output_filepath,
+                        settings,
+                        video_path,
+                        video_folder,
+                        m_clone,
+                    )
+                    .expect("Render failed");
                 }
             }
             for thread in threads {
                 thread.join().expect("The thread being joined has panicked");
+                m.clear().unwrap();
             }
             self.queue.clear();
             self.renders_queued = false;
@@ -103,6 +117,7 @@ impl Rendering {
         settings: Config,
         video_path: PathBuf,
         video_folder: PathBuf,
+        progress_bar: Arc<MultiProgress>,
     ) -> Result<(), std::io::Error> {
         let temp_path = create_temp_path(video_folder)?;
 
@@ -116,15 +131,25 @@ impl Rendering {
             &output_filepath,
             settings_clone,
         )?;
-        let process = exec(ffmpeg_settings);
+        let process = exec(
+            ffmpeg_settings,
+            progress_bar,
+            video_clone
+                .clone()
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string(),
+        );
         if !process.success() {
-            print!("Processing failed");
+            println!("Processing failed");
             helpers::exit(0);
         }
-        print!(
+        println!(
             "Finished processing {} to {}",
             video_path.file_name().unwrap().to_str().unwrap(),
-            output_filepath.display()
+            output_filepath.file_name().unwrap().to_str().unwrap()
         );
         clean(video_clone, script_path);
         Ok(())
@@ -159,6 +184,7 @@ impl Rendering {
 
         let pipe_args = vec![
             "-y".to_string(),
+            "-p".to_string(),
             script_path.to_str().unwrap().to_string(),
             "-".to_string(),
         ];
