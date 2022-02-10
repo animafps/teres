@@ -1,6 +1,8 @@
 # blur
 
-<https://github.com/f0e/blur> in rust
+blur is a program made for easily and efficiently adding motion blur to videos through frame blending and interpolation.
+
+Based on the work done on <https://github.com/f0e/blur> 
 
 ## Warning - Preproduction
 
@@ -29,4 +31,4 @@ again same thing applies and that being that not all the properties do anything 
 
 ## License
 
-blur by anima is licensed under GPL-3.0-or-later see [LICENSE](LICENSE) for more details
+This repository is licensed under GPL-3.0-or-later see [LICENSE](LICENSE) for more details
