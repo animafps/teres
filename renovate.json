@@ -1,9 +1,9 @@
 {
   "extends": [
-    "config:base",
-		"helpers:pinGitHubActionDigests",
-		"group:allNonMajor",
-    ":automergeMinor
+  	"config:base",
+	"helpers:pinGitHubActionDigests",
+	"group:allNonMajor",
+    	":automergeMinor",
   ],
 	"schedule": ["before 12pm on Sunday"],
 }
