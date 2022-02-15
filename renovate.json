@@ -5,5 +5,5 @@
 	"group:allNonMajor",
     	":automergeMinor"
   ],
-  "schedule": ["before 12pm on Sunday"],
+  "schedule": ["before 12pm on Sunday"]
 }
