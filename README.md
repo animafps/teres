@@ -4,23 +4,34 @@ blur is a program made for easily and efficiently adding motion blur to videos t
 
 Based on the work done on <https://github.com/f0e/blur>
 
-## Warning - Preproduction
+## Download/Installation
 
-This is still in the early stages of development so not much support can be provided and no guarentee on performance and bugs/issues that you may run into
-if you do choose to use it and run into said issues then do create a issue here on github or send me(Anima) a dm on any social media
+> Currently blur only supports Windows platforms but support for others is coming
+
+1. Download the setup utility from [the latest release](https://github.com/animafps/blur/releases/latest/)
+2. Run setup and follow prompts to install
+3. Done! it should be installed 
 
 ## Usage
 
-Run the program
+blur can be run from the command line or without
 
-### Cli
+### Non CLI
 
-blur can be run from the command line
+You can run the program and follow the instructions or use the open with function in explorer
+
+### CLI
 
 e.g.
 
-```powershell
-./blur.exe -n demo.mp4
+```bash
+blur -n demo.mp4
+```
+
+For all cli arguments use
+
+```bash
+blur -h
 ```
 
 ### Config
