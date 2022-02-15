@@ -3,7 +3,7 @@
   	"config:base",
 	"helpers:pinGitHubActionDigests",
 	"group:allNonMajor",
-    	":automergeMinor",
+    	":automergeMinor"
   ],
-	"schedule": ["before 12pm on Sunday"],
+  "schedule": ["before 12pm on Sunday"],
 }
