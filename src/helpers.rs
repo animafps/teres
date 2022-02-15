@@ -39,14 +39,14 @@ pub fn exec(
     let vspipe_out = vspipe.stdout.expect("Failed to open vspipe stdout");
     let vspipe_stderr = vspipe.stderr.expect("Failed to open vspipe stderr");
 
-    progress(vspipe_stderr, m, video_filename);
-
     let ffmpeg = Command::new(ffmpeg_settings.ffmpeg_exe)
         .args(ffmpeg_settings.ffmpeg_args)
         .stdin(Stdio::from(vspipe_out))
-        .stderr(Stdio::null())
+        .stderr(Stdio::piped())
         .spawn()
         .expect("Failed to start ffmpeg process");
+
+    progress(vspipe_stderr, m, video_filename);
 
     ffmpeg.wait_with_output().unwrap().status
 }

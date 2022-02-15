@@ -2,7 +2,7 @@
 
 blur is a program made for easily and efficiently adding motion blur to videos through frame blending and interpolation.
 
-Based on the work done on <https://github.com/f0e/blur> 
+Based on the work done on <https://github.com/f0e/blur>
 
 ## Warning - Preproduction
 

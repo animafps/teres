@@ -232,7 +232,7 @@ impl Rendering {
             if settings.gpu {
                 if settings.gpu_type.to_lowercase() == "nvidia" {
                     ffmpeg_command.push("-c:v");
-                    ffmpeg_command.push("nvenc_h264");
+                    ffmpeg_command.push("h264_nvenc");
                     ffmpeg_command.push("-preset");
                     ffmpeg_command.push("p7");
                     ffmpeg_command.push("-qp");

@@ -52,7 +52,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
 
     let files;
 
-    if using_ui {
+    if cli_args.input.is_none() {
         println!("Select input video(s)");
         let diag_files = FileDialog::new()
             .add_filter("Video", &["mp4", "mov", "mkv", "avi"])
