@@ -1,6 +1,6 @@
-# blur
+# teres
 
-blur is a program made for easily and efficiently adding motion blur to videos through frame blending and interpolation.
+teres is a program made for easily and efficiently adding motion blur to videos through frame blending and interpolation.
 
 Based on the work done on <https://github.com/f0e/blur>
 
@@ -8,7 +8,7 @@ Based on the work done on <https://github.com/f0e/blur>
 
 > Currently blur only supports Windows platforms but support for others is coming
 
-1. Download the setup utility from [the latest release](https://github.com/animafps/blur/releases/latest/)
+1. Download the setup utility from [the latest release](https://github.com/animafps/teres/releases/latest/)
 2. Run setup and follow prompts to install
 3. Done! it should be installed 
 
@@ -25,18 +25,18 @@ You can run the program and follow the instructions or use the open with functio
 e.g.
 
 ```bash
-blur -n demo.mp4
+teres -n demo.mp4
 ```
 
 For all cli arguments use
 
 ```bash
-blur -h
+teres -h
 ```
 
 ### Config
 
-When first run it creates a config file in your home folder. `C:/users/user/blur-config.yml` for example which allows you to change the settings for the interpolation and enconding processes
+When first run it creates a config file in your home folder. `C:/users/user/teres-config.yml` for example which allows you to change the settings for the interpolation and enconding processes
 
 again same thing applies and that being that not all the properties do anything or sometimes break the program.
 
