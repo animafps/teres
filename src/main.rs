@@ -1,9 +1,9 @@
 use clap::Parser;
-mod blur;
 mod config;
 mod helpers;
 mod rendering;
 mod script_handler;
+mod teres;
 use human_panic::setup_panic;
 
 /// Add motion blur to videos
@@ -21,7 +21,7 @@ fn main() {
     setup_panic!();
 
     let args = Cli::parse();
-    blur::run(args);
+    teres::run(args);
 
     helpers::exit(0);
 }

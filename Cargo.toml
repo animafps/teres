@@ -1,8 +1,8 @@
 [package]
-name = "blur"
-version = "0.2.0"
+name = "teres"
+version = "0.2.2"
 edition = "2021"
-repository = "https://github.com/animafps/blur"
+repository = "https://github.com/animafps/teres"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -17,3 +17,4 @@ human-panic = "1.0.3"
 rfd = "0.7.0"
 indicatif = "0.17.0-rc.4"
 regex = "1.5.4"
+ctrlc = "3.2.1"

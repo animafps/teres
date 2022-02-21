@@ -1,17 +1,18 @@
 use indicatif::MultiProgress;
 
-use crate::blur::{create_temp_path, used_installer};
 use crate::config::Config;
 use crate::helpers::{self, clean, exec};
 use crate::script_handler::create;
+use crate::teres::{create_temp_path, used_installer};
 use std::path::{Path, PathBuf};
 
 use std::sync::Arc;
 use std::vec::Vec;
 
+#[derive(Clone)]
 pub struct Render {
-    video_path: PathBuf,
-    video_folder: PathBuf,
+    pub video_path: PathBuf,
+    pub video_folder: PathBuf,
 
     input_filename: String,
     output_filepath: PathBuf,
@@ -46,6 +47,7 @@ impl PartialEq for Render {
     }
 }
 
+#[derive(Clone)]
 pub struct Rendering {
     pub queue: Vec<Render>,
     pub renders_queued: bool,
@@ -137,7 +139,7 @@ impl Rendering {
                 .to_string(),
         );
         if !process.success() {
-            println!("Processing failed");
+            eprintln!("Processing failed");
             helpers::exit(0);
         }
         println!(

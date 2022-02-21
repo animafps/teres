@@ -18,12 +18,12 @@ pub fn run(cli_args: Cli) -> Option<()> {
     ];
     println!();
     for (_, line) in art.iter().enumerate() {
-        println!("{}", line);
+        eprintln!("{}", line);
     }
     println!();
 
     if cli_args.input.is_none() && !using_ui {
-        println!("No video(s) inputted");
+        eprintln!("No video(s) inputted");
         helpers::exit(1);
     }
 
@@ -35,13 +35,13 @@ pub fn run(cli_args: Cli) -> Option<()> {
         let vspipe = Command::new("vspipe").arg("-v").output();
 
         if ffmepg.is_err() {
-            println!("FFmpeg is not installed");
+            eprintln!("FFmpeg is not installed");
         }
         if python.is_err() {
-            println!("Python is not installed");
+            eprintln!("Python is not installed");
         }
         if vspipe.is_err() {
-            println!("VapourSynth is not installed");
+            eprintln!("VapourSynth is not installed");
         }
     }
 
@@ -59,7 +59,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
             .set_directory(home_dir()?.to_str()?)
             .pick_files();
         if diag_files.is_none() {
-            println!("No input video(s) selected");
+            eprintln!("No input video(s) selected");
             helpers::exit(1);
         }
         files = diag_files?;
@@ -73,12 +73,16 @@ pub fn run(cli_args: Cli) -> Option<()> {
 
     for video in files {
         if !video.exists() {
-            println!("Video {} does not exist", video.display());
+            eprintln!("Video {} does not exist", video.display());
             helpers::exit(1);
         }
         let render = rendering::Render::new(video);
         rendering.queue_render(render?)
     }
+
+    let clone = rendering.clone().queue;
+    ctrlc::set_handler(move || helpers::clean_temp(clone.to_vec()))
+        .expect("Error setting Ctrl-C handler");
 
     rendering.render_videos();
     Some(())
@@ -87,7 +91,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
 pub fn create_temp_path(
     video_path: std::path::PathBuf,
 ) -> Result<std::path::PathBuf, std::io::Error> {
-    let temp_path = video_path.join(".blur_temp");
+    let temp_path = video_path.join(".teres_temp");
 
     if !temp_path.exists() {
         std::fs::create_dir_all(&temp_path)?;

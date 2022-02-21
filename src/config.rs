@@ -43,7 +43,7 @@ pub struct Config {
 impl Config {
     pub fn parse() -> Config {
         let filepath = home_dir().unwrap();
-        let config_file = filepath.join(".blur-config.yml");
+        let config_file = filepath.join(".teres-config.yml");
         if !config_file.exists() {
             Config::create(&config_file);
         }

@@ -1,7 +1,7 @@
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use regex::Regex;
 
-use crate::rendering::CommandWithArgs;
+use crate::rendering::{CommandWithArgs, Render};
 use std::path::PathBuf;
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
 
@@ -10,9 +10,12 @@ use std::io::{self, BufReader};
 use std::sync::Arc;
 
 pub fn clean(video: PathBuf, script_path: PathBuf) {
-    if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
+    if script_path.file_name().unwrap().to_str().unwrap() == ".teres_temp" {
+        std::fs::remove_dir_all(script_path).unwrap();
+    } else if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
         std::fs::remove_dir_all(script_path.parent().unwrap()).unwrap();
     } else {
+        println!("{}", script_path.display());
         std::fs::remove_file(script_path).unwrap();
     }
     std::fs::remove_file(
@@ -22,6 +25,12 @@ pub fn clean(video: PathBuf, script_path: PathBuf) {
             .join(video.file_name().unwrap().to_str().unwrap().to_owned() + ".ffindex"),
     )
     .unwrap();
+}
+
+pub fn clean_temp(videos: Vec<Render>) {
+    for video in videos {
+        clean(video.video_path, video.video_folder.join(".teres_temp"));
+    }
 }
 
 pub fn exec(
@@ -52,8 +61,8 @@ pub fn exec(
 }
 
 pub fn exit(status_code: i32) {
-    println!();
-    let mut stdout = io::stdout();
+    eprintln!();
+    let mut stdout = io::stderr();
 
     // We want the cursor to stay at the end of the line, so we print without a newline and flush manually.
     write!(stdout, "Press enter to close...").unwrap();
