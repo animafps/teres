@@ -6,6 +6,8 @@
 
 ## Installing
 
+> Note: Currently only 64bit Windows is supported but other platforms are in the works
+
 1. Download the setup utility from [the latest release](https://github.com/animafps/teres/releases/latest/)
 2. Run setup and follow prompts to install
 3. Done! it should be installed 
