@@ -1,18 +1,16 @@
-# teres
+<h1 align="center">Teres</h1>
 
-teres is a program made for easily and efficiently adding motion blur to videos through frame blending and interpolation.
+<p align="center"> A program made for easily and efficiently adding motion blur or fps to videos through frame blending and interpolation.
+    <br> 
+</p>
 
-Based on the work done on <https://github.com/f0e/blur>
-
-## Download/Installation
-
-> Currently blur only supports Windows platforms but support for others is coming
+## Installing
 
 1. Download the setup utility from [the latest release](https://github.com/animafps/teres/releases/latest/)
 2. Run setup and follow prompts to install
 3. Done! it should be installed 
 
-## Usage
+## 🎈 Usage
 
 teres can be run from the command line or without
 
@@ -39,6 +37,24 @@ teres -h
 When first run it creates a config file in your home folder. `C:/users/user/teres-config.yml` for example which allows you to change the settings for the interpolation and enconding processes
 
 again same thing applies and that being that not all the properties do anything or sometimes break the program.
+
+## ✨ Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## 🎉 Acknowledgements
+- [foe's blur](https://github.com/f0e/blur) - Was the basis for the entire code base
 
 ## License
 
