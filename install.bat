@@ -3,7 +3,7 @@
 :: Script that installs all the required dependencies for tekno's blur.
 :: - couleur / modified by tekno
 
-title Blur dependencies installer
+title Teres dependencies installer
 
 :: -------------------------- Administrator access request --------------------------
 
@@ -124,7 +124,7 @@ goto vapoursynth
 
 :ffmpeg_manual
 cls
-echo FFmpeg is required to run Blur.
+echo FFmpeg is required to run Teres.
 echo You can close this window, or press any key to get redirected to a guide on manually installing FFmpeg.
 echo.
 pause
