@@ -14,7 +14,7 @@ Based on the work done on <https://github.com/f0e/blur>
 
 ## Usage
 
-blur can be run from the command line or without
+teres can be run from the command line or without
 
 ### Non CLI
 
