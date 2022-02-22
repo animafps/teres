@@ -1,14 +1,24 @@
 {
-	"files": [
-		"README.md"
-	],
-	"skipCi": true,
-	"contributors": [],
-	"projectName": "teres",
-	"projectOwner": "animafps",
-	"repoType": "github",
-	"repoHost": "https://github.com",
-	"contributorsPerLine": 7,
-	"imageSize": 100,
-	"commit": true
+  "files": [
+    "README.md"
+  ],
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "animafps",
+      "name": "Anima",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18208134?v=4",
+      "profile": "https://animafps.xyz",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "projectName": "teres",
+  "projectOwner": "animafps",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "contributorsPerLine": 7,
+  "imageSize": 100,
+  "commit": true
 }
