@@ -8,7 +8,7 @@
 ### VapourSynth plugins
 - [FFMS2](https://github.com/FFMS/ffms2)
 - [HAvsFunc](https://github.com/HomeOfVapourSynthEvolution/havsfunc)
-- [SVPflow 4.2.0.142](https://web.archive.org/web/20190322064557/http://www.svp-team.com/files/gpl/svpflow-4.2.0.142.zip)
+- [SVPflow 4.3.0.168](http://www.svp-team.com/files/gpl/svpflow-4.3.0.168.zip)
 - [vs-frameblender](https://github.com/f0e/vs-frameblender)
 - [weighting.py](https://github.com/f0e/blur/blob/master/plugins/weighting.py)
 - [filldrops.py](https://github.com/f0e/blur/blob/master/plugins/filldrops.py)
