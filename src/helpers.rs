@@ -81,7 +81,9 @@ fn progress(stderr: ChildStderr, progress_bar: Arc<MultiProgress>, video_filenam
     let frame_regex = Regex::new(r"Frame: (?P<current>\d+)/(?P<total>\d+)").unwrap();
     let progress = progress_bar.add(ProgressBar::new(100));
     progress.set_style(
-        ProgressStyle::default_bar().template("[{msg}] {wide_bar} {percent}% {eta_precise}"),
+        ProgressStyle::default_bar()
+            .template("[{msg}] {wide_bar} {percent}% {eta_precise}")
+            .unwrap(),
     );
     progress.set_message(video_filename);
 
