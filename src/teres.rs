@@ -1,4 +1,5 @@
 use crate::helpers;
+use crate::helpers::exit;
 use crate::rendering;
 use crate::Cli;
 use dirs::home_dir;
@@ -25,7 +26,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
 
     if cli_args.input.is_none() && !using_ui {
         eprintln!("No video(s) inputted");
-        helpers::exit(1);
+        exit(exitcode::NOINPUT);
     }
 
     if (!used_installer().unwrap() && cfg!(target_os = "windows")) || cfg!(target_os = "linux") {
@@ -37,12 +38,15 @@ pub fn run(cli_args: Cli) -> Option<()> {
 
         if ffmepg.is_err() {
             eprintln!("FFmpeg is not installed");
+            exit(exitcode::UNAVAILABLE)
         }
         if python.is_err() {
             eprintln!("Python is not installed");
+            exit(exitcode::UNAVAILABLE)
         }
         if vspipe.is_err() {
             eprintln!("VapourSynth is not installed");
+            exit(exitcode::UNAVAILABLE)
         }
     }
 
@@ -59,7 +63,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
             .pick_files();
         if diag_files.is_none() {
             eprintln!("No input video(s) selected");
-            helpers::exit(1);
+            exit(exitcode::NOINPUT);
         }
         diag_files?
     } else {
@@ -73,7 +77,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
     for video in files {
         if !video.exists() {
             eprintln!("Video {} does not exist", video.display());
-            helpers::exit(1);
+            exit(exitcode::NOINPUT);
         }
         let render = rendering::Render::new(video);
         rendering.queue_render(render?)

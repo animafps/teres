@@ -1,4 +1,4 @@
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use indicatif::ProgressBar;
 use regex::Regex;
 
 use crate::rendering::{CommandWithArgs, Render};
@@ -7,7 +7,6 @@ use std::process::{ChildStderr, Command, ExitStatus, Stdio};
 
 use std::io::prelude::*;
 use std::io::{self, BufReader};
-use std::sync::Arc;
 
 pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
     let path = path.as_ref();
@@ -43,11 +42,7 @@ pub fn clean_temp(videos: Vec<Render>) {
     }
 }
 
-pub fn exec(
-    ffmpeg_settings: CommandWithArgs,
-    m: Arc<MultiProgress>,
-    video_filename: String,
-) -> ExitStatus {
+pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
     let vspipe = Command::new(ffmpeg_settings.vspipe_exe)
         .args(ffmpeg_settings.vspipe_args)
         .stdout(Stdio::piped())
@@ -64,7 +59,7 @@ pub fn exec(
         .spawn()
         .expect("Failed to start ffmpeg process");
 
-    progress(vspipe_stderr, m, video_filename);
+    progress(vspipe_stderr, pb);
 
     ffmpeg.wait_with_output().unwrap().status
 }
@@ -84,15 +79,10 @@ pub fn exit(status_code: i32) {
     std::process::exit(status_code);
 }
 
-fn progress(stderr: ChildStderr, progress_bar: Arc<MultiProgress>, video_filename: String) {
+fn progress(stderr: ChildStderr, progress: ProgressBar) {
     let mut stderr = BufReader::new(stderr);
     let mut read_frames = false;
     let frame_regex = Regex::new(r"Frame: (?P<current>\d+)/(?P<total>\d+)").unwrap();
-    let progress = progress_bar.add(ProgressBar::new(100));
-    progress.set_style(
-        ProgressStyle::default_bar().template("[{msg}] {wide_bar} {percent}% {eta_precise}"),
-    );
-    progress.set_message(video_filename);
 
     loop {
         let mut buffer = [0; 32];

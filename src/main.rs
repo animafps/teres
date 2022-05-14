@@ -20,7 +20,12 @@ pub struct Cli {
 fn main() {
     setup_panic!();
     let args = Cli::parse();
+
+    if cfg!(target_os = "windows") {
+        winconsole::console::set_title("Teres").unwrap();
+    }
+
     teres::run(args);
 
-    helpers::exit(0);
+    helpers::exit(exitcode::OK);
 }

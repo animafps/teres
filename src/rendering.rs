@@ -1,4 +1,4 @@
-use indicatif::MultiProgress;
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::config::Config;
 use crate::helpers::{self, change_file_name, clean, exec};
@@ -6,7 +6,6 @@ use crate::script_handler::create;
 use crate::teres::{create_temp_path, used_installer};
 use std::path::{Path, PathBuf};
 
-use std::sync::Arc;
 use std::vec::Vec;
 
 #[derive(Clone)]
@@ -69,7 +68,7 @@ impl Rendering {
 
     pub fn render_videos(&mut self) {
         if self.renders_queued {
-            let m = Arc::new(MultiProgress::new());
+            let m = MultiProgress::new();
             let mut threads = vec![];
             for render in self.queue.iter() {
                 println!("Processing {}", render.input_filename);
@@ -77,29 +76,31 @@ impl Rendering {
                 let settings = render.settings.clone();
                 let video_path = render.video_path.clone();
                 let video_folder = render.video_folder.clone();
-                let m_clone = m.clone();
-                if render != self.queue.last().unwrap() {
-                    threads.push(std::thread::spawn(move || {
-                        Rendering::render_video(
-                            output_filepath,
-                            settings,
-                            video_path,
-                            video_folder,
-                            m_clone,
-                        )
-                        .expect("Render thread failed");
-                    }));
-                } else {
+                let progress = m.add(ProgressBar::new(100));
+                progress.set_style(
+                    ProgressStyle::default_bar()
+                        .template(" [{msg}] {wide_bar:.cyan/blue} {percent}% {eta_precise}"),
+                );
+                progress.set_message(
+                    video_path
+                        .file_name()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                );
+                threads.push(std::thread::spawn(move || {
                     Rendering::render_video(
                         output_filepath,
                         settings,
                         video_path,
                         video_folder,
-                        m_clone,
+                        progress,
                     )
-                    .expect("Render failed");
-                }
+                    .expect("Render thread failed");
+                }));
             }
+            m.join().unwrap();
             for thread in threads {
                 thread.join().expect("The thread being joined has panicked");
             }
@@ -113,7 +114,7 @@ impl Rendering {
         settings: Config,
         video_path: PathBuf,
         video_folder: PathBuf,
-        progress_bar: Arc<MultiProgress>,
+        progress_bar: ProgressBar,
     ) -> Result<(), std::io::Error> {
         let temp_path = create_temp_path(video_folder)?;
 
@@ -127,24 +128,18 @@ impl Rendering {
             &output_filepath,
             settings_clone,
         )?;
-        let process = exec(
-            ffmpeg_settings,
-            progress_bar,
-            video_clone
-                .file_name()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .to_string(),
-        );
+
+        let now = std::time::Instant::now();
+        let process = exec(ffmpeg_settings, progress_bar);
         if !process.success() {
             eprintln!("Processing failed");
-            helpers::exit(0);
+            helpers::exit(exitcode::SOFTWARE);
         }
         println!(
-            "Finished processing {} to {}",
+            "Finished processing {} to {} in {}",
             video_path.file_name().unwrap().to_str().unwrap(),
-            output_filepath.file_name().unwrap().to_str().unwrap()
+            output_filepath.file_name().unwrap().to_str().unwrap(),
+            indicatif::HumanDuration(now.elapsed())
         );
         clean(video_clone, script_path);
         Ok(())

@@ -17,10 +17,14 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 human-panic = "1.0.3"
 rfd = "0.8.0"
-indicatif = "0.16.2"
+indicatif = { version = "0.16.2", features = ["improved_unicode"] }
 regex = "1.5.4"
 ctrlc = "3.2.1"
+winconsole = "0.11"
+exitcode = "1.1.2"
 
 [build-dependencies]
-clap_mangen = "0.1"
-clap = { version = "3.1", features = ["derive"] }
+winres = "0.1"
+
+[package.metadata.winres]
+ProductName = "Teres"
