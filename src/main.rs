@@ -12,14 +12,13 @@ use human_panic::setup_panic;
 pub struct Cli {
     /// Input file name(s) (comma separated)
     input: Option<String>,
-    /// Disable user interface
+    /// Disable user interface (CLI only)
     #[clap(short, long)]
     noui: bool,
 }
 
 fn main() {
     setup_panic!();
-
     let args = Cli::parse();
     teres::run(args);
 

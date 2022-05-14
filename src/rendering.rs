@@ -1,7 +1,7 @@
 use indicatif::MultiProgress;
 
 use crate::config::Config;
-use crate::helpers::{self, clean, exec};
+use crate::helpers::{self, change_file_name, clean, exec};
 use crate::script_handler::create;
 use crate::teres::{create_temp_path, used_installer};
 use std::path::{Path, PathBuf};
@@ -102,7 +102,6 @@ impl Rendering {
             }
             for thread in threads {
                 thread.join().expect("The thread being joined has panicked");
-                m.clear().unwrap();
             }
             self.queue.clear();
             self.renders_queued = false;
@@ -165,17 +164,10 @@ impl Rendering {
         if used_installer()? {
             let exepath = std::env::current_exe()?;
             let path = exepath.parent().unwrap();
-            if path.join("lib/ffmpeg/ffmpeg").exists() {
-                vspipe_exe = format!("{}/lib/vapoursynth/vspipe", path.to_str().unwrap());
-                vspipe_path = vspipe_exe.as_str();
-                ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg", path.to_str().unwrap());
-                ffmpeg_path = ffmpeg_exe.as_str();
-            } else {
-                vspipe_exe = format!("{}/lib/vapoursynth/VSPipe.exe", path.to_str().unwrap());
-                vspipe_path = vspipe_exe.as_str();
-                ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg.exe", path.to_str().unwrap());
-                ffmpeg_path = ffmpeg_exe.as_str();
-            }
+            vspipe_exe = format!("{}/lib/vapoursynth/VSPipe.exe", path.to_str().unwrap());
+            vspipe_path = vspipe_exe.as_str();
+            ffmpeg_exe = format!("{}/lib/ffmpeg/ffmpeg.exe", path.to_str().unwrap());
+            ffmpeg_path = ffmpeg_exe.as_str();
         }
 
         let pipe_args = vec![
@@ -189,7 +181,7 @@ impl Rendering {
             "-loglevel",
             "error",
             "-hide_banner",
-            "-stats",
+            "-nostats",
             "-i",
             "pipe:",
             "-i",
@@ -281,7 +273,12 @@ impl Rendering {
         }
 
         // output
-        ffmpeg_command.push(output_path.to_str().unwrap().trim_start_matches("\\\\?\\"));
+        if settings.detailed_filenames {
+            //    change_file_name(output_path, );
+        } else {
+            ffmpeg_command.push(output_path.to_str().unwrap().trim_start_matches("\\\\?\\"));
+        }
+
         let ffmpeg_args: Vec<String> = ffmpeg_command.iter().map(|n| n.to_string()).collect();
         Ok(CommandWithArgs {
             ffmpeg_exe: ffmpeg_path.to_string(),

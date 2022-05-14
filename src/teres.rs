@@ -28,7 +28,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
         helpers::exit(1);
     }
 
-    if !used_installer().unwrap() {
+    if (!used_installer().unwrap() && cfg!(target_os = "windows")) || cfg!(target_os = "linux") {
         let ffmepg = Command::new("ffmpeg").arg("-v").output();
 
         let python = Command::new("python3").arg("-v").output();
@@ -51,9 +51,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
         renders_queued: false,
     };
 
-    let files;
-
-    if cli_args.input.is_none() {
+    let files = if cli_args.input.is_none() {
         println!("Select input video(s)");
         let diag_files = FileDialog::new()
             .add_filter("Video", &["mp4", "mov", "mkv", "avi"])
@@ -63,14 +61,14 @@ pub fn run(cli_args: Cli) -> Option<()> {
             eprintln!("No input video(s) selected");
             helpers::exit(1);
         }
-        files = diag_files?;
+        diag_files?
     } else {
         let input = cli_args.input?;
-        files = input
+        input
             .split(',')
             .map(|file| std::path::Path::new(file).to_path_buf())
-            .collect();
-    }
+            .collect()
+    };
 
     for video in files {
         if !video.exists() {
@@ -101,6 +99,7 @@ pub fn create_temp_path(
     Ok(temp_path)
 }
 
+#[cfg(target_os = "windows")]
 pub fn used_installer() -> Result<bool, std::io::Error> {
     let path = std::env::current_exe()?;
     let parent_path = path.parent().unwrap();
@@ -108,4 +107,9 @@ pub fn used_installer() -> Result<bool, std::io::Error> {
         && parent_path.join("lib/ffmpeg/ffmpeg.exe").exists())
         || (parent_path.join("lib/vapoursynth/vspipe").exists()
             && parent_path.join("lib/ffmpeg/ffmpeg").exists()))
+}
+
+#[cfg(target_family = "unix")]
+pub fn used_installer() {
+    return Ok(false);
 }

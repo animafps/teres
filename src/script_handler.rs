@@ -26,7 +26,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
                 .unwrap()
                 .to_str()
                 .unwrap()
-                .replace("\\", "\\\\")
+                .replace('\\', "\\\\")
         )
         .as_str();
     } else {
@@ -37,7 +37,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
                 .unwrap()
                 .to_str()
                 .unwrap()
-                .replace("\\", "\\\\")
+                .replace('\\', "\\\\")
         )
         .as_str();
         script += "video = core.fmtc.matrix(clip=video, mat=\"601\", col_fam=vs.YUV, bits=16)\n";
@@ -86,12 +86,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
                 algorithm = "13".to_string();
             }
 
-            let gpu_bool;
-            if settings.gpu {
-                gpu_bool = "True";
-            } else {
-                gpu_bool = "False";
-            }
+            let gpu_bool = if settings.gpu { "True" } else { "False" };
             script += format!("video = haf.InterFrame(video, GPU={}, NewNum={}, Preset=\"{}\", Tuning=\"{}\", OverrideAlgo={})\n", gpu_bool, settings.interpolated_fps, speed, tuning, algorithm).as_str()
         }
     }
@@ -120,12 +115,11 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         script += "	if blended_frames % 2 == 0:\n";
         script += "		blended_frames += 1\n";
 
-        let triangle_reverse_bool;
-        if settings.blur_weighting_triangle_reverse {
-            triangle_reverse_bool = "True";
+        let triangle_reverse_bool = if settings.blur_weighting_triangle_reverse {
+            "True"
         } else {
-            triangle_reverse_bool = "False";
-        }
+            "False"
+        };
 
         let mut weighting_bound = String::from("[");
         weighting_bound += &settings

@@ -2,12 +2,22 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use regex::Regex;
 
 use crate::rendering::{CommandWithArgs, Render};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
 
 use std::io::prelude::*;
 use std::io::{self, BufReader};
 use std::sync::Arc;
+
+pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
+    let path = path.as_ref();
+    let mut result = path.to_owned();
+    result.set_file_name(name);
+    if let Some(ext) = path.extension() {
+        result.set_extension(ext);
+    }
+    result
+}
 
 pub fn clean(video: PathBuf, script_path: PathBuf) {
     if script_path.file_name().unwrap().to_str().unwrap() == ".teres_temp" {
@@ -51,7 +61,6 @@ pub fn exec(
     let ffmpeg = Command::new(ffmpeg_settings.ffmpeg_exe)
         .args(ffmpeg_settings.ffmpeg_args)
         .stdin(Stdio::from(vspipe_out))
-        .stderr(Stdio::piped())
         .spawn()
         .expect("Failed to start ffmpeg process");
 
@@ -81,9 +90,7 @@ fn progress(stderr: ChildStderr, progress_bar: Arc<MultiProgress>, video_filenam
     let frame_regex = Regex::new(r"Frame: (?P<current>\d+)/(?P<total>\d+)").unwrap();
     let progress = progress_bar.add(ProgressBar::new(100));
     progress.set_style(
-        ProgressStyle::default_bar()
-            .template("[{msg}] {wide_bar} {percent}% {eta_precise}")
-            .unwrap(),
+        ProgressStyle::default_bar().template("[{msg}] {wide_bar} {percent}% {eta_precise}"),
     );
     progress.set_message(video_filename);
 

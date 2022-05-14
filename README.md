@@ -4,6 +4,16 @@
     <br> 
 </p>
 
+## Features 
+
+- Interpolate video to higher framerate
+- Blur frames together for motion blur
+- Both CLI and a minimal ui usage
+- Supports multiple videos at the same time
+- Progress bar
+- Global configuration file
+- Multithread support
+
 ## Installing
 
 > Note: Currently only 64bit Windows is supported but other platforms are in the works
