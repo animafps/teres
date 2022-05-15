@@ -17,13 +17,21 @@ pub struct Cli {
     noui: bool,
 }
 
+#[cfg(windows)]
 fn main() {
     setup_panic!();
     let args = Cli::parse();
+    winconsole::console::set_title("Teres").unwrap();
 
-    if cfg!(target_os = "windows") {
-        winconsole::console::set_title("Teres").unwrap();
-    }
+    teres::run(args);
+
+    helpers::exit(exitcode::OK);
+}
+
+#[cfg(unix)]
+fn main() {
+    setup_panic!();
+    let args = Cli::parse();
 
     teres::run(args);
 
