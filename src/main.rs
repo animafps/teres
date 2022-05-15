@@ -38,7 +38,7 @@ fn main() {
 fn main() {
     setup_panic!();
     let args = Cli::parse();
-    setup_logger();
+    setup_logger(args.verbose.log_level_filter()).unwrap();
 
     teres::run(args);
 
