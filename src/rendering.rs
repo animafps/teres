@@ -173,7 +173,7 @@ impl Rendering {
         }
 
         let pipe_args = vec![
-            "-y".to_string(),
+            "-c y4m".to_string(),
             "-p".to_string(),
             script_path.to_str().unwrap().to_string(),
             "-".to_string(),
