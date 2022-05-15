@@ -4,3 +4,7 @@ fn main() -> std::io::Result<()> {
     res.compile().unwrap();
     Ok(())
 }
+#[cfg(unix)]
+fn main() -> std::io::Result<()> {
+    Ok(())
+}
