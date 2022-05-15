@@ -29,7 +29,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
         exit(exitcode::NOINPUT);
     }
 
-    if (!used_installer().unwrap() && cfg!(target_os = "windows")) || cfg!(target_os = "linux") {
+    if (!used_installer().unwrap() && cfg!(target_os = "windows")) || cfg!(target_family = "unix") {
         let ffmepg = Command::new("ffmpeg").arg("-v").output();
 
         let python = Command::new("python3").arg("-v").output();
@@ -114,6 +114,6 @@ pub fn used_installer() -> Result<bool, std::io::Error> {
 }
 
 #[cfg(target_family = "unix")]
-pub fn used_installer() {
+pub fn used_installer() -> Result<bool, std::io::Error> {
     return Ok(false);
 }
