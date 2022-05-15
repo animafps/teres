@@ -40,13 +40,9 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
                 .replace('\\', "\\\\")
         )
         .as_str();
-        script += "video = core.fmtc.matrix(clip=video, mat=\"601\", col_fam=vs.YUV, bits=16)\n";
+        script += "video = core.fmtc.matrix(clip=video, mat=\"709\", col_fam=vs.YUV, bits=16)\n";
         script += "video = core.fmtc.resample(clip=video, css\"420\")\n";
         script += "video = core.fmtc.bitdepth(clip=video, bits=8)\n";
-    }
-
-    if settings.deduplicate {
-        script += "video = filldrops.FillDrops(video, thresh=0.001)\n";
     }
 
     if settings.input_timescale != 1.0 {
@@ -60,14 +56,14 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
     if settings.interpolate {
         if settings.interpolation_program == "rife" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS)\n";
-            script += format!("while videofps < {}:\n", settings.interpolated_fps).as_str();
-            script += " video = RIFE(video)\n";
+            script += format!("while video.fps < {}:\n", settings.interpolated_fps).as_str();
+            script += "    video = RIFE(video)\n";
             script += "video = core.resize.Bicubic(video, format=vs.YUV402P8, matrix_x=\"709\")\n"
         } else if settings.interpolation_program == "rife-ncnn" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS)\n";
 
-            script += format!("while videofps < {}:\n", settings.interpolated_fps).as_str();
-            script += " video = core.rife.RIFE(video)\n";
+            script += format!("while video.fps < {}:\n", settings.interpolated_fps).as_str();
+            script += "    video = core.rife.RIFE(video)\n";
 
             script += "video = core.resize.Bicubic(video, format=vs.YUV402P8, matrix_x=\"709\")\n"
         } else {
@@ -97,6 +93,10 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
             settings.output_timescale,
         )
         .as_str();
+    }
+
+    if settings.deduplicate {
+        script += "video = filldrops.FillDrops(video, thresh=0.001)\n";
     }
 
     if settings.blur {

@@ -24,7 +24,6 @@ pub fn clean(video: PathBuf, script_path: PathBuf) {
     } else if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
         std::fs::remove_dir_all(script_path.parent().unwrap()).unwrap();
     } else {
-        println!("{}", script_path.display());
         std::fs::remove_file(script_path).unwrap();
     }
     std::fs::remove_file(
@@ -80,21 +79,18 @@ pub fn exit(status_code: i32) {
 }
 
 fn progress(stderr: ChildStderr, progress: ProgressBar) {
-    let mut stderr = BufReader::new(stderr);
     let mut read_frames = false;
     let frame_regex = Regex::new(r"Frame: (?P<current>\d+)/(?P<total>\d+)").unwrap();
+    let output_regex = Regex::new(r"Output").unwrap();
+    let mut buf = BufReader::new(stderr);
 
     loop {
-        let mut buffer = [0; 32];
-        match stderr.read_exact(&mut buffer) {
-            Ok(_) => {}
-            Err(_) => {
-                progress.finish();
-                break;
-            }
+        let mut byte_vec = vec![];
+        buf.read_until(b'\r', &mut byte_vec).expect("stderr Error");
+        let string = String::from_utf8_lossy(&byte_vec);
+        if output_regex.is_match(&string) {
+            break;
         }
-        let string = String::from_utf8_lossy(&buffer);
-
         let caps;
         if frame_regex.is_match(&string) {
             caps = frame_regex.captures(&string).unwrap();

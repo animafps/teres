@@ -58,6 +58,8 @@ pub struct CommandWithArgs {
 
     pub vspipe_exe: String,
     pub vspipe_args: Vec<String>,
+
+    pub output_filename: String,
 }
 
 impl Rendering {
@@ -78,16 +80,13 @@ impl Rendering {
                 let video_folder = render.video_folder.clone();
                 let progress = m.add(ProgressBar::new(100));
                 progress.set_style(
-                    ProgressStyle::default_bar()
-                        .template(" [{msg}] {wide_bar:.cyan/blue} {percent}% {eta_precise}"),
-                );
-                progress.set_message(
-                    video_path
-                        .file_name()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
+                    ProgressStyle::default_bar().template(
+                        format!(
+                            " [{}] {{wide_bar:.cyan/blue}} {{percent}}% {{eta_precise}}",
+                            video_path.file_name().unwrap().to_str().unwrap()
+                        )
+                        .as_str(),
+                    ),
                 );
                 threads.push(std::thread::spawn(move || {
                     Rendering::render_video(
@@ -130,6 +129,7 @@ impl Rendering {
         )?;
 
         let now = std::time::Instant::now();
+        let filename = ffmpeg_settings.output_filename.clone();
         let process = exec(ffmpeg_settings, progress_bar);
         if !process.success() {
             eprintln!("Processing failed");
@@ -138,7 +138,7 @@ impl Rendering {
         println!(
             "Finished processing {} to {} in {}",
             video_path.file_name().unwrap().to_str().unwrap(),
-            output_filepath.file_name().unwrap().to_str().unwrap(),
+            filename,
             indicatif::HumanDuration(now.elapsed())
         );
         clean(video_clone, script_path);
@@ -172,6 +172,8 @@ impl Rendering {
             "-".to_string(),
         ];
 
+        let infile = video_path.display().to_string();
+
         let mut ffmpeg_command = vec![
             "-loglevel",
             "error",
@@ -180,7 +182,7 @@ impl Rendering {
             "-i",
             "pipe:",
             "-i",
-            video_path.to_str().unwrap().trim_start_matches("\\\\?\\"),
+            infile.as_str(),
             "-map",
             "0:v",
             "-map",
@@ -268,11 +270,25 @@ impl Rendering {
         }
 
         // output
-        if settings.detailed_filenames {
-            //    change_file_name(output_path, );
+        let outfile = if settings.detailed_filenames && settings.interpolate && settings.blur {
+            change_file_name(
+                output_path,
+                format!(
+                    "{}-{}fps-{}~{}fps-{}",
+                    output_path.file_stem().unwrap().to_str().unwrap(),
+                    settings.interpolated_fps,
+                    settings.interpolation_program,
+                    settings.blur_output_fps,
+                    settings.blur_amount
+                )
+                .as_str(),
+            )
+            .display()
+            .to_string()
         } else {
-            ffmpeg_command.push(output_path.to_str().unwrap().trim_start_matches("\\\\?\\"));
-        }
+            output_path.display().to_string()
+        };
+        ffmpeg_command.push(outfile.as_str());
 
         let ffmpeg_args: Vec<String> = ffmpeg_command.iter().map(|n| n.to_string()).collect();
         Ok(CommandWithArgs {
@@ -281,6 +297,8 @@ impl Rendering {
 
             vspipe_exe: vspipe_path.to_string(),
             vspipe_args: pipe_args,
+
+            output_filename: outfile,
         })
     }
 }
