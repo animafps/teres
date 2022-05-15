@@ -1,12 +1,11 @@
-use indicatif::ProgressBar;
-use regex::Regex;
-
 use crate::rendering::{CommandWithArgs, Render};
-use std::path::{Path, PathBuf};
-use std::process::{ChildStderr, Command, ExitStatus, Stdio};
-
+use indicatif::ProgressBar;
+use log::debug;
+use regex::Regex;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
+use std::path::{Path, PathBuf};
+use std::process::{ChildStderr, Command, ExitStatus, Stdio};
 
 pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
     let path = path.as_ref();
@@ -57,6 +56,7 @@ pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
         .stdin(Stdio::from(vspipe_out))
         .spawn()
         .expect("Failed to start ffmpeg process");
+    debug!("Spawned subprocesses");
 
     progress(vspipe_stderr, pb);
 

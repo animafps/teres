@@ -1,11 +1,10 @@
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
-
 use crate::config::Config;
 use crate::helpers::{self, change_file_name, clean, exec};
 use crate::script_handler::create;
 use crate::teres::{create_temp_path, used_installer};
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use log::{debug, error, info};
 use std::path::{Path, PathBuf};
-
 use std::vec::Vec;
 
 #[derive(Clone)]
@@ -73,7 +72,7 @@ impl Rendering {
             let m = MultiProgress::new();
             let mut threads = vec![];
             for render in self.queue.iter() {
-                println!("Processing {}", render.input_filename);
+                info!("Processing {}", render.input_filename);
                 let output_filepath = render.output_filepath.clone();
                 let settings = render.settings.clone();
                 let video_path = render.video_path.clone();
@@ -128,14 +127,22 @@ impl Rendering {
             settings_clone,
         )?;
 
+        debug!(
+            "Starting processes with {} {} | {} {}",
+            ffmpeg_settings.ffmpeg_exe,
+            ffmpeg_settings.ffmpeg_args.join(" "),
+            ffmpeg_settings.vspipe_exe,
+            ffmpeg_settings.vspipe_args.join(" ")
+        );
+
         let now = std::time::Instant::now();
         let filename = ffmpeg_settings.output_filename.clone();
         let process = exec(ffmpeg_settings, progress_bar);
         if !process.success() {
-            eprintln!("Processing failed");
+            error!("Processing failed");
             helpers::exit(exitcode::SOFTWARE);
         }
-        println!(
+        info!(
             "Finished processing {} to {} in {}",
             video_path.file_name().unwrap().to_str().unwrap(),
             filename,

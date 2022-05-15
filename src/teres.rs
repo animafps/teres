@@ -3,6 +3,7 @@ use crate::helpers::exit;
 use crate::rendering;
 use crate::Cli;
 use dirs::home_dir;
+use log::{debug, error, info};
 use rfd::FileDialog;
 use std::process::Command;
 use std::vec;
@@ -18,14 +19,14 @@ pub fn run(cli_args: Cli) -> Option<()> {
         "       ██║   ███████╗██║  ██║███████╗███████║",
         "       ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝",
     ];
-    println!();
+    info!("");
     for (_, line) in art.iter().enumerate() {
-        eprintln!("{}", line);
+        info!("{}", line);
     }
-    println!();
+    info!("");
 
     if cli_args.input.is_none() && !using_ui {
-        eprintln!("No video(s) inputted");
+        error!("No video(s) inputted");
         exit(exitcode::NOINPUT);
     }
 
@@ -37,15 +38,15 @@ pub fn run(cli_args: Cli) -> Option<()> {
         let vspipe = Command::new("vspipe").arg("-v").output();
 
         if ffmepg.is_err() {
-            eprintln!("FFmpeg is not installed");
+            error!("FFmpeg is not installed");
             exit(exitcode::UNAVAILABLE)
         }
         if python.is_err() {
-            eprintln!("Python is not installed");
+            error!("Python is not installed");
             exit(exitcode::UNAVAILABLE)
         }
         if vspipe.is_err() {
-            eprintln!("VapourSynth is not installed");
+            error!("VapourSynth is not installed");
             exit(exitcode::UNAVAILABLE)
         }
     }
@@ -56,13 +57,13 @@ pub fn run(cli_args: Cli) -> Option<()> {
     };
 
     let files = if cli_args.input.is_none() {
-        println!("Select input video(s)");
+        eprintln!("Select input video(s)");
         let diag_files = FileDialog::new()
             .add_filter("Video", &["mp4", "mov", "mkv", "avi"])
             .set_directory(home_dir()?.to_str()?)
             .pick_files();
         if diag_files.is_none() {
-            eprintln!("No input video(s) selected");
+            error!("No input video(s) selected");
             exit(exitcode::NOINPUT);
         }
         diag_files?
@@ -76,7 +77,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
 
     for video in files {
         if !video.exists() {
-            eprintln!("Video {} does not exist", video.display());
+            error!("Video {} does not exist", video.display());
             exit(exitcode::NOINPUT);
         }
         let render = rendering::Render::new(video);
@@ -87,6 +88,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
     ctrlc::set_handler(move || helpers::clean_temp(clone.to_vec()))
         .expect("Error setting Ctrl-C handler");
 
+    debug!("Queued renders");
     rendering.render_videos();
     Some(())
 }

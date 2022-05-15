@@ -1,6 +1,6 @@
 [package]
 name = "teres"
-version = "0.2.3"
+version = "0.3.0"
 edition = "2021"
 repository = "https://github.com/animafps/teres"
 authors = ["Anima <contact@animafps.xyz>"]
@@ -22,6 +22,8 @@ regex = "1.5.5"
 ctrlc = "3.2.2"
 winconsole = "0.11"
 exitcode = "1.1.2"
+clap-verbosity-flag = "1.0.0"
+log = "0.4"
 
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1"
