@@ -18,7 +18,7 @@ serde_yaml = "0.8"
 human-panic = "1.0.3"
 rfd = "0.8.2"
 indicatif = { version = "0.16.2", features = ["improved_unicode"] }
-regex = "1.5.5"
+regex = "1.5.6"
 ctrlc = "3.2.2"
 winconsole = "0.11"
 exitcode = "1.1.2"
