@@ -1,5 +1,5 @@
-name: teres
-title: Teres
+name: docs
+title: Docs
 version: true
 nav:
 - modules/ROOT/nav.adoc

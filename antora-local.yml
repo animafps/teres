@@ -1,10 +1,10 @@
 site:
-  title: Teres Docs
-  start_page: teres::index.adoc
+  title: Teres Documentation
+  start_page: docs::index.adoc
 content:
   sources:
   - url: .
-    tags: [v*, '!v0.1.0', '!v0.1.1', '!v0.2.0', '!v0.2.1', '!v0.2.2', '!v0.2.3', '!v0.3.0']
+    tags: [v*, '!v0.{1..3}*']
     branches: main
     version: true
     start_path: docs
