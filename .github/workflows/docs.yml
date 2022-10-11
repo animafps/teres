@@ -17,19 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
     - name: Setup Pages
       id: pages
-      uses: actions/configure-pages@v2
+      uses: actions/configure-pages@2ce6d5eaa1f7b36a30c9b424cd73fab661857cfe # tag=v2
     - name: Install Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
       with:
         node-version: '16'
     - name: Get npm cache directory
       id: npm-cache-dir
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
-    - uses: actions/cache@v3
+    - uses: actions/cache@56461b9eb0f8438fd15c7a9968e3c9ebb18ceff1 # tag=v3
       id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
@@ -42,7 +42,7 @@ jobs:
     - name: Generate Site
       run: npx antora antora.yml
     - name: Upload GitHub Pages artifact
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@a597aecd27af1cf14095ccaa29169358e3d91e28 # tag=v1
       with:
         path: ./build/site
 
@@ -55,4 +55,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@75c1124b142c363849aac2d23c005a4faf87c90f # tag=v1
