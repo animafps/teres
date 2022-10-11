@@ -26,7 +26,7 @@ jobs:
 
   build-linux:
     name: Build Linux Binary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
       - name: Install build dependencies
@@ -46,7 +46,7 @@ jobs:
           
   check:
     name: Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
@@ -67,7 +67,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
