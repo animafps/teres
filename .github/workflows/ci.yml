@@ -7,8 +7,8 @@ on:
 name: CI
 
 jobs:
-  build:
-    name: Build
+  build-win:
+    name: Build 
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
@@ -19,10 +19,31 @@ jobs:
         with:
           command: build
           args: --release --all-features
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Windows x86_64 Binary
+          path: target/release/teres.exe
+
+  build-linux:
+    name: Build 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+      - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1
+        with:
+          command: build
+          args: --release --all-features
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Linux x86_64 Binary
+          path: target/release/teres
           
   check:
     name: Check
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
@@ -41,7 +62,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
