@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
       - name: Install build dependencies
         run: |
-          sudo apt-get install -y libgtk-4-dev build-essential
+          sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential
       - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           toolchain: stable
@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
       - name: Install build dependencies
         run: |
-          sudo apt-get install -y libgtk-4-dev build-essential
+          sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential
       - name: Install stable toolchain
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
       - name: Install build dependencies
         run: |
-          sudo apt-get install -y libgtk-4-dev build-essential
+          sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential
       - name: Install stable toolchain
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
