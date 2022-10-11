@@ -1,0 +1,2 @@
+= Teres
+:navtitle: Welcome

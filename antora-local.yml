@@ -1,0 +1,15 @@
+site:
+  title: Teres Docs
+  start_page: teres::index.adoc
+content:
+  sources:
+  - url: .
+    tags: [v*, '!v0.1.0', '!v0.1.1', '!v0.2.0', '!v0.2.1', '!v0.2.2', '!v0.2.3', '!v0.3.0']
+    branches: main
+    version: true
+    start_path: docs
+ui: 
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./docs/supplemental-ui
