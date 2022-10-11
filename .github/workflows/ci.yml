@@ -19,7 +19,7 @@ jobs:
         with:
           command: build
           args: --release --all-features
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
         with:
           name: win_x86_64_binary
           path: target/release/teres.exe
@@ -39,7 +39,7 @@ jobs:
         with:
           command: build
           args: --release --all-features
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
         with:
           name: linux_x86_64_binary
           path: target/release/teres
