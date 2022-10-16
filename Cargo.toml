@@ -22,7 +22,7 @@ regex = "1.5.6"
 ctrlc = "3.2.2"
 winconsole = "0.11"
 exitcode = "1.1.2"
-clap-verbosity-flag = "1.0.1"
+clap-verbosity-flag = "2.0.0"
 log = "0.4"
 
 [target.'cfg(windows)'.build-dependencies]
