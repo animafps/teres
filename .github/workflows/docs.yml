@@ -55,4 +55,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@75c1124b142c363849aac2d23c005a4faf87c90f # tag=v1
+        uses: actions/deploy-pages@20a4baa1095bad40ba7d6ca0d9abbc220b76603f # v1
