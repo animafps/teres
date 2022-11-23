@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
     - name: Setup Pages
       id: pages
-      uses: actions/configure-pages@2ce6d5eaa1f7b36a30c9b424cd73fab661857cfe # tag=v2
+      uses: actions/configure-pages@c5a3e1159e0cbdf0845eb8811bd39e39fc3099c2 # v2
     - name: Install Node.js
       uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
       with:
