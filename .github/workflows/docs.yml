@@ -42,7 +42,7 @@ jobs:
     - name: Generate Site
       run: npx antora antora.yml
     - name: Upload GitHub Pages artifact
-      uses: actions/upload-pages-artifact@a597aecd27af1cf14095ccaa29169358e3d91e28 # tag=v1
+      uses: actions/upload-pages-artifact@c8641e80048cf33d329c39df3bcc53196178335a # v1
       with:
         path: ./build/site
 
