@@ -70,7 +70,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  http_parser.rb (~> 0.6.0)
+  http_parser.rb (~> 0.8.0)
   jekyll (~> 4.3.1)
   just-the-docs
   tzinfo (>= 1, < 3)
