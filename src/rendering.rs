@@ -79,13 +79,15 @@ impl Rendering {
                 let video_folder = render.video_folder.clone();
                 let progress = m.add(ProgressBar::new(100));
                 progress.set_style(
-                    ProgressStyle::default_bar().template(
-                        format!(
-                            " [{}] {{wide_bar:.cyan/blue}} {{percent}}% {{eta_precise}}",
-                            video_path.file_name().unwrap().to_str().unwrap()
+                    ProgressStyle::default_bar()
+                        .template(
+                            format!(
+                                " [{}] {{wide_bar:.cyan/blue}} {{percent}}% {{eta_precise}}",
+                                video_path.file_name().unwrap().to_str().unwrap()
+                            )
+                            .as_str(),
                         )
-                        .as_str(),
-                    ).unwrap(),
+                        .unwrap(),
                 );
                 threads.push(std::thread::spawn(move || {
                     Rendering::render_video(
@@ -176,7 +178,7 @@ impl Rendering {
             "-".to_string(),
             "-p".to_string(),
             "-c".to_string(),
-            "y4m".to_string()
+            "y4m".to_string(),
         ];
 
         let infile = video_path.display().to_string();

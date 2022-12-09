@@ -1,5 +1,5 @@
-use clap_verbosity_flag::Verbosity;
 use clap::Parser;
+use clap_verbosity_flag::Verbosity;
 
 /// Add motion blur to videos
 #[derive(Debug, Parser)]

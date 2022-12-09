@@ -1,7 +1,7 @@
+use crate::cli::Cli;
 use crate::helpers;
 use crate::helpers::exit;
 use crate::rendering;
-use crate::cli::Cli;
 use dirs::home_dir;
 use rfd::FileDialog;
 use std::process::Command;
@@ -68,7 +68,8 @@ pub fn run(cli_args: Cli) -> Option<()> {
         diag_files?
     } else {
         let input = cli_args.input;
-        input.iter()
+        input
+            .iter()
             .map(|file| std::path::Path::new(file).to_path_buf())
             .collect()
     };

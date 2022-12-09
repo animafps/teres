@@ -51,10 +51,12 @@ pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
 
     let ffmpeg = Command::new(ffmpeg_settings.ffmpeg_exe)
         .args(ffmpeg_settings.ffmpeg_args)
-        .stdin(Stdio::from(vspipe.stdout.expect("Failed to open vspipe stdout")))
+        .stdin(Stdio::from(
+            vspipe.stdout.expect("Failed to open vspipe stdout"),
+        ))
         .spawn()
         .expect("Failed to start ffmpeg process");
-    
+
     debug!("Spawned subprocesses");
 
     progress(vspipe.stderr.unwrap(), pb);

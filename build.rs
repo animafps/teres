@@ -1,10 +1,12 @@
 use clap::CommandFactory;
 
-#[path="src/cli.rs"]
+#[path = "src/cli.rs"]
 mod cli;
 
 fn man_gen() -> std::io::Result<()> {
-    let out_dir = std::path::PathBuf::from(std::env::var_os("OUT_DIR").ok_or_else(|| std::io::ErrorKind::NotFound)?);
+    let out_dir = std::path::PathBuf::from(
+        std::env::var_os("OUT_DIR").ok_or_else(|| std::io::ErrorKind::NotFound)?,
+    );
     let cmd = cli::Cli::command();
 
     let man = clap_mangen::Man::new(cmd);

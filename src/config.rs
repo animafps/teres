@@ -55,7 +55,7 @@ impl Config {
 
     pub fn create(filepath: &std::path::Path) {
         let prefix = filepath.parent().unwrap();
-		std::fs::create_dir_all(prefix).unwrap();
+        std::fs::create_dir_all(prefix).unwrap();
         fs::write(
             filepath,
             "# blur
