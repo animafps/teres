@@ -79,6 +79,14 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md), [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT
 
 - [foe's blur](https://github.com/f0e/blur) - Was the basis for the entire code base
 - [Smoothie](https://github.com/couleur-tweak-tips/Smoothie) - Couleur and the ctt team helped create more inovation and colaboration with similar goals
+- [vs-frameblender](https://github.com/couleurm/vs-frameblender) - Plugin used for blending the resulting frames of interpolation
+- [ffmpeg](https://ffmpeg.org/) - The program used for encoding the interpreted frames
+- [vapoursynth](www.vapoursynth.com) - Program for manipulating and interpolating videos
+- [ffms2](https://github.com/FFMS/ffms2) - Plugin for inputting the video file
+- [havsfunc](https://github.com/HomeOfVapourSynthEvolution/havsfunc) - Plugin that provides the svp interpolation function
+- [mvsfunc](https://github.com/HomeOfVapourSynthEvolution/mvsfunc) - Plugin that provides colour manipulation
+- [vs-rife](https://github.com/HolyWu/vs-rife) - Vapoursynth implementation of the interpolation algorithm RIFE
+- [VapourSynth-RIFE-ncnn-Vulkan](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-RIFE-ncnn-Vulkan) - Vulkan implementation of RIFE
 
 ## License
 
