@@ -80,4 +80,4 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## License
 
-This repository is licensed under GPL-3.0-or-later see [LICENSE](LICENSE) for more details
+This repository is licensed under GPL-3.0-or-later see [COPYING](COPYING) for more details
