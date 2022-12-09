@@ -6,3 +6,12 @@
 **/*.rs.bk
 
 build/
+
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+
+teres.1
+teres.1.html

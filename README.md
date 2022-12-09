@@ -4,23 +4,23 @@
     <br> 
 </p>
 
+**NOTE:** This program is unstable and is sub v1.0.0 so has lots of bugs and api/config changes will occur with its development
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
+
 ## Features
 
 - Interpolate video to higher framerate
 - Blur frames together for motion blur
-- Both CLI and a minimal ui usage
-- Supports multiple videos at the same time
+- Both CLI and a minimal GUI usage
+- Supports multiple videos simultatiously
 - Progress bar
 - Global configuration file
 - Multithread and GPU support
 
 ## Installing
 
-> Note: Currently only 64bit Windows is supported but other platforms are in the works
-
-1. Download the setup utility from [the latest release](https://github.com/animafps/teres/releases/latest/)
-2. Run setup and follow prompts to install
-3. Done! it should be installed
+Use the packages in the repos above
 
 For manual installation, see [CONTRIBUTING.md](/CONTRIBUTING.md)
 
@@ -49,7 +49,7 @@ OPTIONS:
 
 ### Config
 
-When first run it creates a config file in your home folder. `C:/users/user/teres-config.yml` for example which allows you to change the settings for the interpolation and enconding processes
+When first run it creates a config file in the .config/teres folder. `C:/users/user/.config/teres/config.yml` for example which allows you to change the settings for the interpolation and enconding processes
 
 #### blur
 
@@ -157,6 +157,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## 🎉 Acknowledgements
 
 - [foe's blur](https://github.com/f0e/blur) - Was the basis for the entire code base
+- [Smoothie](https://github.com/couleur-tweak-tips/Smoothie) - Couleur and the ctt team helped create more inovation and colaboration with similar goals
 
 ## License
 
