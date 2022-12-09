@@ -43,7 +43,7 @@ pub struct Config {
 impl Config {
     pub fn parse() -> Config {
         let filepath = home_dir().unwrap();
-        let config_file = filepath.join(".teres-config.yml");
+        let config_file = filepath.join(".config/teres/config.yml");
         if !config_file.exists() {
             Config::create(&config_file);
         }
@@ -54,11 +54,13 @@ impl Config {
     }
 
     pub fn create(filepath: &std::path::Path) {
+        let prefix = filepath.parent().unwrap();
+		std::fs::create_dir_all(prefix).unwrap();
         fs::write(
             filepath,
             "# blur
 blur: true
-blur_amount: 1
+blur_amount: 1 
 blur_output_fps: 60
 blur_weighting: equal
 

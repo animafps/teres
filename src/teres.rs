@@ -1,9 +1,8 @@
 use crate::helpers;
 use crate::helpers::exit;
 use crate::rendering;
-use crate::Cli;
+use crate::cli::Cli;
 use dirs::home_dir;
-use log::{debug, error, info};
 use rfd::FileDialog;
 use std::process::Command;
 use std::vec;
@@ -19,13 +18,13 @@ pub fn run(cli_args: Cli) -> Option<()> {
         "       ██║   ███████╗██║  ██║███████╗███████║",
         "       ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝",
     ];
-    info!("");
+    eprintln!();
     for (_, line) in art.iter().enumerate() {
-        info!("{}", line);
+        eprintln!("{}", line);
     }
-    info!("");
+    eprintln!();
 
-    if cli_args.input.is_none() && !using_ui {
+    if cli_args.input.is_empty() && !using_ui {
         error!("No video(s) inputted");
         exit(exitcode::NOINPUT);
     }
@@ -56,7 +55,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
         renders_queued: false,
     };
 
-    let files = if cli_args.input.is_none() {
+    let files = if cli_args.input.is_empty() {
         eprintln!("Select input video(s)");
         let diag_files = FileDialog::new()
             .add_filter("Video", &["mp4", "mov", "mkv", "avi"])
@@ -68,9 +67,8 @@ pub fn run(cli_args: Cli) -> Option<()> {
         }
         diag_files?
     } else {
-        let input = cli_args.input?;
-        input
-            .split(',')
+        let input = cli_args.input;
+        input.iter()
             .map(|file| std::path::Path::new(file).to_path_buf())
             .collect()
     };
@@ -117,5 +115,5 @@ pub fn used_installer() -> Result<bool, std::io::Error> {
 
 #[cfg(target_family = "unix")]
 pub fn used_installer() -> Result<bool, std::io::Error> {
-    return Ok(false);
+    Ok(false)
 }

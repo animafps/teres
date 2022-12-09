@@ -3,7 +3,7 @@ use crate::helpers::{self, change_file_name, clean, exec};
 use crate::script_handler::create;
 use crate::teres::{create_temp_path, used_installer};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
-use log::{debug, error, info};
+use log::{debug, error};
 use std::path::{Path, PathBuf};
 use std::vec::Vec;
 
@@ -72,7 +72,7 @@ impl Rendering {
             let m = MultiProgress::new();
             let mut threads = vec![];
             for render in self.queue.iter() {
-                info!("Processing {}", render.input_filename);
+                eprintln!("Processing {}", render.input_filename);
                 let output_filepath = render.output_filepath.clone();
                 let settings = render.settings.clone();
                 let video_path = render.video_path.clone();
@@ -85,7 +85,7 @@ impl Rendering {
                             video_path.file_name().unwrap().to_str().unwrap()
                         )
                         .as_str(),
-                    ),
+                    ).unwrap(),
                 );
                 threads.push(std::thread::spawn(move || {
                     Rendering::render_video(
@@ -98,7 +98,6 @@ impl Rendering {
                     .expect("Render thread failed");
                 }));
             }
-            m.join().unwrap();
             for thread in threads {
                 thread.join().expect("The thread being joined has panicked");
             }
@@ -129,10 +128,10 @@ impl Rendering {
 
         debug!(
             "Starting processes with {} {} | {} {}",
-            ffmpeg_settings.ffmpeg_exe,
-            ffmpeg_settings.ffmpeg_args.join(" "),
             ffmpeg_settings.vspipe_exe,
-            ffmpeg_settings.vspipe_args.join(" ")
+            ffmpeg_settings.vspipe_args.join(" "),
+            ffmpeg_settings.ffmpeg_exe,
+            ffmpeg_settings.ffmpeg_args.join(" ")
         );
 
         let now = std::time::Instant::now();
@@ -142,7 +141,7 @@ impl Rendering {
             error!("Processing failed");
             helpers::exit(exitcode::SOFTWARE);
         }
-        info!(
+        eprintln!(
             "Finished processing {} to {} in {}",
             video_path.file_name().unwrap().to_str().unwrap(),
             filename,
@@ -173,10 +172,11 @@ impl Rendering {
         }
 
         let pipe_args = vec![
-            "-c y4m".to_string(),
-            "-p".to_string(),
             script_path.to_str().unwrap().to_string(),
             "-".to_string(),
+            "-p".to_string(),
+            "-c".to_string(),
+            "y4m".to_string()
         ];
 
         let infile = video_path.display().to_string();
@@ -187,7 +187,7 @@ impl Rendering {
             "-hide_banner",
             "-nostats",
             "-i",
-            "pipe:",
+            "-",
             "-i",
             infile.as_str(),
             "-map",
@@ -223,7 +223,7 @@ impl Rendering {
         }
 
         let quality = &settings.quality.to_string();
-        if settings.custom_ffmpeg_filters != "~" {
+        if settings.custom_ffmpeg_filters != "~" && settings.custom_ffmpeg_filters.is_empty() {
             ffmpeg_command.push(&settings.custom_ffmpeg_filters);
         } else {
             // video format
@@ -296,6 +296,7 @@ impl Rendering {
             output_path.display().to_string()
         };
         ffmpeg_command.push(outfile.as_str());
+        debug!("{:?}", ffmpeg_command);
 
         let ffmpeg_args: Vec<String> = ffmpeg_command.iter().map(|n| n.to_string()).collect();
         Ok(CommandWithArgs {

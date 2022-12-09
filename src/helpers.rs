@@ -18,6 +18,7 @@ pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
 }
 
 pub fn clean(video: PathBuf, script_path: PathBuf) {
+    debug!("Cleaning temp files at: {}", script_path.display());
     if script_path.file_name().unwrap().to_str().unwrap() == ".teres_temp" {
         std::fs::remove_dir_all(script_path).unwrap();
     } else if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
@@ -48,17 +49,15 @@ pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
         .spawn()
         .expect("Failed to start vspipe process");
 
-    let vspipe_out = vspipe.stdout.expect("Failed to open vspipe stdout");
-    let vspipe_stderr = vspipe.stderr.expect("Failed to open vspipe stderr");
-
     let ffmpeg = Command::new(ffmpeg_settings.ffmpeg_exe)
         .args(ffmpeg_settings.ffmpeg_args)
-        .stdin(Stdio::from(vspipe_out))
+        .stdin(Stdio::from(vspipe.stdout.expect("Failed to open vspipe stdout")))
         .spawn()
         .expect("Failed to start ffmpeg process");
+    
     debug!("Spawned subprocesses");
 
-    progress(vspipe_stderr, pb);
+    progress(vspipe.stderr.unwrap(), pb);
 
     ffmpeg.wait_with_output().unwrap().status
 }
