@@ -27,7 +27,11 @@ Or
 8. Install [weighting.py](https://raw.githubusercontent.com/f0e/blur/master/plugins/weighting.py) and [filldrops.py](https://github.com/f0e/blur/blob/master/plugins/filldrops.py) to "%appdata%/Roaming/Python/Python39/site-packages"
 
 
-## Guidelines
+### Documentation Environment
+
+See [jekyll docs](https://jekyllrb.com/docs/)
+
+## Guidelines for code
 
 - Format with `cargo fmt`
 - Follow all guidelines of https://clig.dev

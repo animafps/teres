@@ -73,6 +73,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
+See [CONTRIBUTING.md](./CONTRIBUTING.md), [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) and [active issues](https://github.com/animafps/teres/issues) if you want to contribute
+
 ## 🎉 Acknowledgements
 
 - [foe's blur](https://github.com/f0e/blur) - Was the basis for the entire code base
