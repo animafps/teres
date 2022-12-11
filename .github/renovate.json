@@ -1,0 +1,24 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		   ":prHourlyLimit2",
+		   ":prConcurrentLimit10",
+		   "group:monorepos",
+		   "group:recommended",
+		   "workarounds:all",
+		   ":automergeMinor"
+  	],
+	"labels": ["📦 dependencies"],
+    "semanticCommits": "enabled",
+    "semanticCommitType": "build",
+    "rangeStrategy": "bump",
+	"packageRules": [
+		{
+            "matchDatasources": ["crate", "rubygems"],
+            "lockFileMaintenance": {
+                "enabled": true,
+                "extends": ["schedule:weekly"]
+            }
+        }
+	]
+}
