@@ -3,7 +3,8 @@
   	"config:base",
 	"helpers:pinGitHubActionDigests",
 	"group:allNonMajor",
-    	":automergeMinor"
+    	":automergeMinor",
+	":semanticCommitTypeAll(chore)"
   ],
   "schedule": ["before 12pm on Sunday"]
 }
