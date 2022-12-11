@@ -19,7 +19,7 @@ human-panic = "1.0.3"
 rfd = "0.10.0"
 indicatif = { version = "0.17.2", features = ["improved_unicode"] }
 regex = "1.7.0"
-ctrlc = "3.2.3"
+ctrlc = "3.2.4"
 winconsole = "0.11"
 exitcode = "1.1.2"
 clap-verbosity-flag = "2.0.0"
