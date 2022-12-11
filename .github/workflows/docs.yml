@@ -35,7 +35,7 @@ jobs:
           cache-version: 0 # Increment this number if you need to re-download cached gems
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@9a141972ca62e4def3a31137a5a086ba5c58572a # v1
+        uses: actions/configure-pages@c5a3e1159e0cbdf0845eb8811bd39e39fc3099c2 # v2
       - run: bundle exec jekyll build --baseurl ${{ steps.pages.outputs.base_path }} # defaults output to '/_site'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@c8641e80048cf33d329c39df3bcc53196178335a # v1 # This will automatically upload an artifact from the '/_site' directory
