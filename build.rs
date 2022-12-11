@@ -5,6 +5,7 @@ mod cli;
 
 fn man_gen() -> std::io::Result<()> {
     let out_dir = std::path::PathBuf::from(
+        #[allow(clippy::unnecessary_lazy_evaluations)]
         std::env::var_os("OUT_DIR").ok_or_else(|| std::io::ErrorKind::NotFound)?,
     );
     let cmd = cli::Cli::command();

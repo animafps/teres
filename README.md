@@ -49,7 +49,7 @@ OPTIONS:
     -V, --version    Print version information
 ```
 
-For configuration options see [the docs](https://animafps.github.io/teres/configuration)
+For configuration options see [the docs](https://animafps.github.io/teres/docs/configuration)
 
 ## ✨ Contributors
 
