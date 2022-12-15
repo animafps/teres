@@ -1,12 +1,13 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": [
-		   ":prHourlyLimit2",
-		   ":prConcurrentLimit10",
-		   "group:monorepos",
-		   "group:recommended",
-		   "workarounds:all",
-		   ":automergeMinor"
+		":prHourlyLimit2",
+		":prConcurrentLimit10",
+		"group:monorepos",
+		"group:recommended",
+		"workarounds:all",
+		":automergeMinor",
+		"helpers:pinGitHubActionDigests"
   	],
 	"labels": ["📦 dependencies"],
     "semanticCommits": "enabled",
