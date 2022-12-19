@@ -6,11 +6,13 @@
  
 *Teres* is a program made to easily and efficiently add motion blur or frames to videos through frame blending and interpolation.
 
-</div>
-
 > **NOTE:** This program is unstable and is sub v1.0.0 so has lots of bugs and api/config changes will occur with its development
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
+---
+
+![demo](./docs/demo.svg)
+
+</div>
 
 ## Features
 
