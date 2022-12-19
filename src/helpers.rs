@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{self, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
+use is_terminal::IsTerminal;
 
 pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
     let path = path.as_ref();
@@ -65,17 +66,18 @@ pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
 }
 
 pub fn exit(status_code: i32) {
-    eprintln!();
-    let mut stdout = io::stderr();
+    if std::io::stdin().is_terminal() {
+        eprintln!();
+        let mut stdout = io::stderr();
 
-    // We want the cursor to stay at the end of the line, so we print without a newline and flush manually.
-    write!(stdout, "Press enter to close...").unwrap();
-    stdout.flush().unwrap();
+        // We want the cursor to stay at the end of the line, so we print without a newline and flush manually.
+        write!(stdout, "Press enter to close...").unwrap();
+        stdout.flush().unwrap();
 
-    // Read a single byte and discard
-    let mut stdin = io::stdin(); // We get `Stdin` here.
-    stdin.read_exact(&mut [0]).unwrap(); // read_line returns the number of bytes read, so we can ignore it.
-
+        // Read a single byte and discard
+        let mut stdin = io::stdin(); // We get `Stdin` here.
+        stdin.read_exact(&mut [0]).unwrap(); // read_line returns the number of bytes read, so we can ignore it.
+    }
     std::process::exit(status_code);
 }
 
