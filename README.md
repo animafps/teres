@@ -14,6 +14,8 @@
 
 </div>
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
+
 ## Features
 
 - Interpolate video to higher framerate
