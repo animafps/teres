@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] - 2022-12-19
+
+### Bug Fixes
+
+- Fixed ffmpeg args
+
+### Miscellaneous Tasks
+
+- Added config for git-cliff and improved renovate config
+- Pin GH actions deps
+
+### Build
+
+- Update actions/checkout digest to 755da8c ([#49](https://github.com/orhun/git-cliff/issues/49))
+- Update actions/upload-pages-artifact digest to 253fd47 ([#50](https://github.com/orhun/git-cliff/issues/50))
+
 ## [0.2.3] - 2022-05-15
 
 ### Documentation
