@@ -1,12 +1,12 @@
 use crate::rendering::{CommandWithArgs, Render};
 use indicatif::ProgressBar;
+use is_terminal::IsTerminal;
 use log::debug;
 use regex::Regex;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
-use is_terminal::IsTerminal;
 
 pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
     let path = path.as_ref();
