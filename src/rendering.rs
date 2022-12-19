@@ -225,7 +225,7 @@ impl Rendering {
         }
 
         let quality = &settings.quality.to_string();
-        if settings.custom_ffmpeg_filters != "~" && settings.custom_ffmpeg_filters.is_empty() {
+        if settings.custom_ffmpeg_filters != "~" && !settings.custom_ffmpeg_filters.is_empty() {
             ffmpeg_command.push(&settings.custom_ffmpeg_filters);
         } else {
             // video format
