@@ -5,13 +5,25 @@ permalink: /
 nav_order: 1
 ---
 
+<div align="center">
+
 # Teres
 
-<p align="center"> A program made for easily and efficiently adding motion blur or fps to videos through frame blending and interpolation.
-    <br> 
-</p>
+[![Discord](https://img.shields.io/discord/1054176051498078218?style=flat-square)](https://discord.gg/5z3YhWstQr) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/animafps/teres/ci.yml?branch=main&style=flat-square)
+ 
+*Teres* is a program made to easily and efficiently add motion blur or frames to videos through frame blending and interpolation.
 
-**NOTE:** This program is unstable and is sub v1.0.0 so has lots of bugs and api/config changes will occur with its development
+> **NOTE:** This program is unstable and is sub v1.0.0 so has lots of bugs and api/config changes will occur with its development
+
+---
+
+| Before | After |
+| --- | --- |
+| ![before](./docs/demo-non.png) | ![after ](./docs/demo.png) |
+
+</div>
+
+*used default settings for the demo above from 60fps source file*
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
 
