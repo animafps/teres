@@ -10,9 +10,13 @@
 
 ---
 
-![demo](./docs/demo.svg)
+| Without | With Teres |
+| --- | --- |
+| ![without](./docs/demo-non.png) | ![with teres](./docs/demo.png) |
 
 </div>
+
+*used default settings for the demo above from 60fps source file*
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
 
