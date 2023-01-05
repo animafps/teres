@@ -11,7 +11,7 @@ jobs:
     name: Build Windows Binary
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           toolchain: stable
@@ -37,7 +37,7 @@ jobs:
     name: Build Linux Binary
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -133,7 +133,7 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Install build dependencies
         run: |
           sudo add-apt-repository ppa:savoury1/vapoursynth && sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev ffmpeg vapoursynth
