@@ -28,7 +28,7 @@
 - Supports multiple videos simultatiously
 - Progress bar
 - Global configuration file
-- Multithread and GPU support
+- Multiple file queue
 
 ## Installing
 

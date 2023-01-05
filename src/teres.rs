@@ -4,7 +4,7 @@ use crate::helpers::exit;
 use crate::rendering;
 use dirs::home_dir;
 use rfd::FileDialog;
-use std::process::Command;
+use std::process::{self, Command};
 use std::vec;
 
 pub fn run(cli_args: Cli) -> Option<()> {
@@ -84,8 +84,12 @@ pub fn run(cli_args: Cli) -> Option<()> {
     }
 
     let clone = rendering.clone().queue;
-    ctrlc::set_handler(move || helpers::clean_temp(clone.to_vec()))
-        .expect("Error setting Ctrl-C handler");
+
+    ctrlc::set_handler(move || {
+        helpers::clean_temp(clone.to_vec());
+        process::exit(exitcode::OK)
+    })
+    .expect("Error setting Ctrl-C handler");
 
     debug!("Queued renders");
     rendering.render_videos();

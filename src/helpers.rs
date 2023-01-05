@@ -3,7 +3,7 @@ use indicatif::ProgressBar;
 use is_terminal::IsTerminal;
 use log::debug;
 use regex::Regex;
-use std::io::prelude::*;
+use std::io::{prelude::*, ErrorKind};
 use std::io::{self, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
@@ -20,25 +20,30 @@ pub fn change_file_name(path: impl AsRef<Path>, name: &str) -> PathBuf {
 
 pub fn clean(video: PathBuf, script_path: PathBuf) {
     debug!("Cleaning temp files at: {}", script_path.display());
-    if script_path.file_name().unwrap().to_str().unwrap() == ".teres_temp" {
-        std::fs::remove_dir_all(script_path).unwrap();
-    } else if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
+    if script_path.parent().unwrap().read_dir().unwrap().count() <= 1 {
+        trace!("Removed temp dir and file");
         std::fs::remove_dir_all(script_path.parent().unwrap()).unwrap();
     } else {
+        trace!("Removed temp file");
         std::fs::remove_file(script_path).unwrap();
     }
-    std::fs::remove_file(
+    let ffindex = std::fs::remove_file(
         video
             .parent()
             .unwrap()
             .join(video.file_name().unwrap().to_str().unwrap().to_owned() + ".ffindex"),
-    )
-    .unwrap();
+    );
+    match ffindex {
+        Ok(()) => (),
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => (),
+            other_error => panic!("Problem deleting the file: {:?}", other_error),
+    }}
 }
 
 pub fn clean_temp(videos: Vec<Render>) {
     for video in videos {
-        clean(video.video_path, video.video_folder.join(".teres_temp"));
+        clean(video.video_path, video.script_path);
     }
 }
 
