@@ -3,8 +3,8 @@ use indicatif::ProgressBar;
 use is_terminal::IsTerminal;
 use log::debug;
 use regex::Regex;
-use std::io::{prelude::*, ErrorKind};
 use std::io::{self, BufReader};
+use std::io::{prelude::*, ErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::{ChildStderr, Command, ExitStatus, Stdio};
 
@@ -38,7 +38,8 @@ pub fn clean(video: PathBuf, script_path: PathBuf) {
         Err(error) => match error.kind() {
             ErrorKind::NotFound => (),
             other_error => panic!("Problem deleting the file: {:?}", other_error),
-    }}
+        },
+    }
 }
 
 pub fn clean_temp(videos: Vec<Render>) {
