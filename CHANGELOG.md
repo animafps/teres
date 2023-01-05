@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.3] - 2023-01-05
+
+### Bug Fixes
+
+- Fixed ctrl-c handling
+
+### Documentation
+
+- Added demo vid
+- Add back packaging status
+- Comparison demo
+- Commited the demo to the github readme
+- Fixed install instructions
+
+### Styling
+
+- Formatting
+
+### Testing
+
+- Initial tests
+
+### Build
+
+- Update rust crate is-terminal to 0.4.2 ([#52](https://github.com/orhun/git-cliff/issues/52))
+- Update actions/cache digest to c17f4bf ([#54](https://github.com/orhun/git-cliff/issues/54))
+- Update actions/checkout digest to ac59398 ([#61](https://github.com/orhun/git-cliff/issues/61))
+- Update rust crate predicates to 2.1.5 ([#59](https://github.com/orhun/git-cliff/issues/59))
+
+### Ci
+
+- Added test checking
+- Fixed ci test deps
+- Added vapoursynth to ci
+- Build vapoursynth
+
 ## [0.3.2] - 2022-12-19
 
 ### Bug Fixes
@@ -12,6 +48,7 @@ All notable changes to this project will be documented in this file.
 
 - Added config for git-cliff and improved renovate config
 - Pin GH actions deps
+- V0.3.2
 
 ### Build
 
