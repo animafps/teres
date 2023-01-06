@@ -10,13 +10,13 @@
 
 ---
 
-| Without | With Teres |
+| Before | After Teres |
 | --- | --- |
-| ![without](./docs/demo-non.png) | ![with teres](./docs/demo.png) |
+| ![without](./docs/demo.gif) | ![with teres](./docs/demo_blur.gif) |
 
 </div>
 
-*used default settings for the demo above from 60fps source file*
+*60fps => 960fps(rife) => 60fps (blur amount 1)*
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/teres.svg)](https://repology.org/project/teres/versions)
 
