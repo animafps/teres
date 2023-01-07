@@ -9,11 +9,11 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
 
     let mut script = "from vapoursynth import core\nimport vapoursynth as vs\nimport havsfunc as haf\nimport adjust\nimport weighting\n".to_owned();
 
-    if settings.deduplicate {
+    if settings.advanced.encoding.deduplicate {
         script += "import filldrops\n";
     }
 
-    if settings.interpolation_program == "rife" {
+    if settings.advanced.interpolation.program == "rife" {
         script += "from vsrife import RIFE\n";
     }
 
@@ -45,69 +45,73 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         script += "video = core.fmtc.bitdepth(clip=video, bits=8)\n";
     }
 
-    if settings.input_timescale != 1.0 {
+    if settings.timescale.input != 1.0 {
         script += format!(
             "video = core.std.AssumeFPS(video, fpsnum=(video.fps * (1 / {})))",
-            settings.input_timescale,
+            settings.timescale.input,
         )
         .as_str();
     }
 
-    if settings.interpolate {
-        if settings.interpolation_program == "rife" {
+    if settings.interpolation.enabled {
+        if settings.advanced.interpolation.program == "rife" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS, matrix_in_s=\"709\")\n";
-            script += format!("while video.fps < {}:\n", settings.interpolated_fps).as_str();
+            script += format!("while video.fps < {}:\n", settings.interpolation.fps).as_str();
             script += "    video = RIFE(video)\n";
             script += "video = core.resize.Bicubic(video, format=vs.YUV420P8, matrix_s=\"709\")\n"
-        } else if settings.interpolation_program == "rife-ncnn" {
+        } else if settings.advanced.interpolation.program == "rife-ncnn" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS, matrix_in_s=\"709\")\n";
 
-            script += format!("while video.fps < {}:\n", settings.interpolated_fps).as_str();
+            script += format!("while video.fps < {}:\n", settings.interpolation.fps).as_str();
             script += "    video = core.rife.RIFE(video)\n";
 
             script += "video = core.resize.Bicubic(video, format=vs.YUV420P8, matrix_s=\"709\")\n"
         } else {
-            let mut speed = settings.interpolation_speed;
+            let mut speed = settings.advanced.interpolation.speed;
             if speed.to_lowercase() == "default" {
                 speed = "medium".to_string();
             }
 
-            let mut tuning = settings.interpolation_tuning;
+            let mut tuning = settings.advanced.interpolation.tuning;
             if tuning.to_lowercase() == "default" {
                 tuning = "smooth".to_string();
             }
 
-            let mut algorithm = settings.interpolation_algorithm;
+            let mut algorithm = settings.advanced.interpolation.algorithm;
             if algorithm.to_lowercase() == "default" {
                 algorithm = "13".to_string();
             }
 
-            let gpu_bool = if settings.gpu { "True" } else { "False" };
-            script += format!("video = haf.InterFrame(video, GPU={}, NewNum={}, Preset=\"{}\", Tuning=\"{}\", OverrideAlgo={})\n", gpu_bool, settings.interpolated_fps, speed, tuning, algorithm).as_str()
+            let gpu_bool = if settings.advanced.encoding.gpu {
+                "True"
+            } else {
+                "False"
+            };
+            script += format!("video = haf.InterFrame(video, GPU={}, NewNum={}, Preset=\"{}\", Tuning=\"{}\", OverrideAlgo={})\n", gpu_bool, settings.interpolation.fps, speed, tuning, algorithm).as_str()
         }
     }
 
-    if settings.output_timescale != 1.0 {
+    if settings.timescale.output != 1.0 {
         script += format!(
             "video = core.std.AssumeFPS(video, fpsnum=(video.fps * {}))\n",
-            settings.output_timescale,
+            settings.timescale.output,
         )
         .as_str();
     }
 
-    if settings.deduplicate {
+    if settings.advanced.encoding.deduplicate {
         script += "video = filldrops.FillDrops(video, thresh=0.001)\n";
     }
 
-    if settings.blur {
+    if settings.blending.enabled {
         script += format!(
             "frame_gap = int(video.fps / {})\n",
-            settings.blur_output_fps
+            settings.blending.output_fps
         )
         .as_str();
         script += format!(
             "blended_frames = int(frame_gap *{})\n",
-            settings.blur_amount
+            settings.blending.amount
         )
         .as_str();
 
@@ -115,7 +119,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         script += "	if blended_frames % 2 == 0:\n";
         script += "		blended_frames += 1\n";
 
-        let triangle_reverse_bool = if settings.blur_weighting_triangle_reverse {
+        let triangle_reverse_bool = if settings.advanced.blend_weighting.triangle_reverse {
             "True"
         } else {
             "False"
@@ -123,7 +127,9 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
 
         let mut weighting_bound = String::from("[");
         weighting_bound += &settings
-            .blur_weighting_bound
+            .advanced
+            .blend_weighting
+            .bound
             .iter()
             .map(|a| a.to_string())
             .collect::<Vec<String>>()
@@ -131,11 +137,11 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         weighting_bound += "]";
         let guassian = format!(
             "weighting.gaussian(blended_frames, {}, {})",
-            settings.blur_weighting_gaussian_std_dev, weighting_bound,
+            settings.advanced.blend_weighting.gaussian_std_dev, weighting_bound,
         );
         let gaussian_sym = format!(
             "weighting.gaussianSym(blended_frames, {}, {})",
-            settings.blur_weighting_gaussian_std_dev, weighting_bound
+            settings.advanced.blend_weighting.gaussian_std_dev, weighting_bound
         );
         let pyramid = format!(
             "weighting.pyramid(blended_frames, {})",
@@ -143,11 +149,11 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         );
         let custom_weight = format!(
             "weighting.divide(blended_frames, {})",
-            settings.blur_weighting
+            settings.blending.weighting
         );
         let custom_function = format!(
             "weighting.custom(blended_frames, '{}', {})",
-            settings.blur_weighting, weighting_bound
+            settings.blending.weighting, weighting_bound
         );
         let weighting_functions = HashMap::from([
             ("equal", "weighting.equal(blended_frames)"),
@@ -159,7 +165,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
             ("custom_function", custom_function.as_str()),
         ]);
 
-        let mut weighting = settings.blur_weighting;
+        let mut weighting = settings.blending.weighting;
         if weighting_functions.get(weighting.as_str()).is_none() {
             // check if it's a custom weighting function
             if weighting.starts_with('[') && weighting.ends_with(']') {
@@ -179,15 +185,18 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
 
         script += format!(
             "video = haf.ChangeFPS(video, {})\n",
-            settings.blur_output_fps
+            settings.blending.output_fps
         )
         .as_str();
     }
 
-    if settings.brightness != 1.0 || settings.contrast != 1.0 || settings.saturation != 1.0 {
+    if settings.filters.brightness != 1.0
+        || settings.filters.contrast != 1.0
+        || settings.filters.saturation != 1.0
+    {
         script += format!(
             "video = adjust.Tweak(video, bright={}, cont={}, sat={})\n",
-            settings.brightness, settings.contrast, settings.saturation
+            settings.filters.brightness, settings.filters.contrast, settings.filters.saturation
         )
         .as_str();
     }

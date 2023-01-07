@@ -17,9 +17,12 @@ nav_order: 1
 
 ---
 
-| Before | After |
-| --- | --- |
-| ![before](./docs/demo-non.png) | ![after ](./docs/demo.png) |
+## Before
+![before](./docs/demo.gif)
+
+## After Teres
+
+![after ](./docs/demo_blur.gif)
 
 </div>
 

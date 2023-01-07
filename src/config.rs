@@ -1,104 +1,148 @@
 use dirs::home_dir;
-use std::fs;
+use std::{fs, io::Read};
 
 use serde::{Deserialize, Serialize};
-use serde_yaml::{self};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
-    pub blur: bool,
-    pub blur_amount: f32,
-    pub blur_output_fps: f32,
-    pub blur_weighting: String,
+    pub blending: Blending,
+    pub interpolation: Interpolation,
+    pub encoding: Encoding,
+    pub timescale: Timescale,
 
-    pub interpolate: bool,
-    pub interpolated_fps: f32,
+    pub filters: Filters,
 
-    pub quality: u32,
-    pub detailed_filenames: bool,
+    pub advanced: Advanced,
+}
 
-    pub input_timescale: f32,
-    pub output_timescale: f32,
-    pub adjust_timescaled_audio_pitch: bool,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Blending {
+    pub enabled: bool,
+    pub amount: f32,
+    pub weighting: String,
+    pub output_fps: i32,
+}
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Interpolation {
+    pub enabled: bool,
+    pub fps: f32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Encoding {
+    pub quality: i32,
+    pub detailed_filename: bool,
+    pub container: String
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Timescale {
+    pub input: f32,
+    pub output: f32,
+    pub adjust_audio_pitch: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Filters {
     pub brightness: f32,
     pub contrast: f32,
     pub saturation: f32,
+}
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Advanced {
+    pub encoding: AdvancedEncoding,
+    pub blend_weighting: AdvancedBlending,
+    pub interpolation: AdvancedInterpolation,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdvancedEncoding {
     pub gpu: bool,
     pub gpu_type: String,
     pub deduplicate: bool,
-    pub custom_ffmpeg_filters: String,
+    pub custom_ffmpeg_filters: Option<String>,
+}
 
-    pub blur_weighting_gaussian_std_dev: f32,
-    pub blur_weighting_triangle_reverse: bool,
-    pub blur_weighting_bound: Vec<f32>,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdvancedBlending {
+    pub gaussian_std_dev: i32,
+    pub triangle_reverse: bool,
+    pub bound: Vec<i32>,
+}
 
-    pub interpolation_program: String,
-    pub interpolation_speed: String,
-    pub interpolation_tuning: String,
-    pub interpolation_algorithm: String,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdvancedInterpolation {
+    pub program: String,
+    pub speed: String,
+    pub tuning: String,
+    pub algorithm: String,
 }
 
 impl Config {
     pub fn parse() -> Config {
         let filepath = home_dir().unwrap();
-        let config_file = filepath.join(".config/teres/config.yml");
+        let config_file = filepath.join(".config/teres/teres.toml");
         if !config_file.exists() {
             Config::create(&config_file);
         }
 
-        let f = std::fs::File::open(config_file).expect("Could not open file.");
-        let scrape_config: Config = serde_yaml::from_reader(f).expect("Could not read values.");
+        let mut f = std::fs::File::open(config_file).expect("Could not open file.");
+        let mut contents = String::new();
+        f.read_to_string(&mut contents)
+            .expect("Could not parse config file to string");
+        let scrape_config: Config = toml::from_str(&contents).expect("Could not read values.");
         scrape_config
     }
 
     pub fn create(filepath: &std::path::Path) {
         let prefix = filepath.parent().unwrap();
         std::fs::create_dir_all(prefix).unwrap();
-        fs::write(
-            filepath,
-            "# blur
-blur: true
-blur_amount: 1 
-blur_output_fps: 60
-blur_weighting: equal
+        fs::write(filepath, String::from("# Teres Configuration
+# For documentation for what each value means and the accecpted values see
+# https://animafps.github.io/teres/docs/configuration
 
-# interpolation
-interpolate: true
-interpolated_fps: 480
+[blending]
+enabled = true
+amount = 1.0
+weighting = \"equal\" # equal/gaussian/gaussian_sym/pyramid/pyramid_sym
+output_fps = 60
 
-# rendering
-quality: 18
-detailed_filenames: false
+[interpolation]
+enabled = true
+fps = 480.0
 
-# timescale
-input_timescale: 1
-output_timescale: 1
-adjust_timescaled_audio_pitch: false
+[encoding]
+quality = 18
+detailed_filename = false
+container = mp4
 
-# filters
-brightness: 1
-saturation: 1
-contrast: 1
+[timescale]
+input = 1.0
+output = 1.0
+adjust_audio_pitch = false
 
-# advanced rendering
-gpu: false
-gpu_type: nvidia #nvidia/amd/intel
-deduplicate: false
-custom_ffmpeg_filters: 
+[filters]
+brightness = 1.0
+contrast = 1.0
+saturation = 1.0
 
-# advanced blur
-blur_weighting_gaussian_std_dev: 2
-blur_weighting_triangle_reverse: false
-blur_weighting_bound: [0, 2]
+[advanced.encoding]
+gpu = false
+gpu_type = \"nvidia\" # nvidia/intel/amd
+deduplicate = false
 
-# advanced interpolation
-interpolation_program: svp #svp/rife/rife-ncnn
-interpolation_speed: default
-interpolation_tuning: default
-interpolation_algorithm: default",
-        )
-        .expect("Failed to create config file")
+[advanced.blend_weighting]
+gaussian_std_dev = 2
+triangle_reverse = false
+bound = [0, 2]
+
+[advanced.interpolation]
+program = \"svp\" # svp/rife/rife-ncnn
+speed = \"default\" # medium/fast/faster/default (default is medium)
+tuning = \"default\" # film/animation/weak/smooth/default (default is smooth)
+algorithm = \"default\" # 2/13/23/default (default is 13)"))
+            .expect("Failed to create config file")
     }
 }

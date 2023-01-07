@@ -28,7 +28,7 @@ impl Render {
 
         let input_filename = video_path.file_name()?.to_str()?.to_string();
         let settings = Config::parse();
-        let output_filepath = video_folder.join(format!("{}_blur.mp4", video_name));
+        let output_filepath = video_folder.join(format!("{}_blur.{}", video_name, settings.encoding.container));
         let temp_path = create_temp_path(video_folder.clone()).unwrap();
         let script_path = create(temp_path, &video_path, settings.clone());
 
@@ -113,13 +113,12 @@ impl Rendering {
         progress_bar: ProgressBar,
     ) -> Result<(), std::io::Error> {
         let video_clone = video_path.clone();
-        let settings_clone = settings.clone();
 
         let ffmpeg_settings = Rendering::build_ffmpeg_command(
             &script_path,
             &video_clone,
             &output_filepath,
-            settings_clone,
+            settings,
         )?;
 
         debug!(
@@ -193,21 +192,21 @@ impl Rendering {
         ];
         // audio filters
         let mut audio_filters = String::new();
-        if settings.input_timescale != 1.0 {
+        if settings.timescale.input != 1.0 {
             // asetrate: speed up and change pitch
             audio_filters +=
-                format!("asetrate=48000*{}", (1.0 / settings.input_timescale)).as_str();
+                format!("asetrate=48000*{}", (1.0 / settings.timescale.input)).as_str();
         }
 
-        if settings.output_timescale != 1.0 {
+        if settings.timescale.output != 1.0 {
             if !audio_filters.is_empty() {
                 audio_filters += ",";
             }
-            if settings.adjust_timescaled_audio_pitch {
-                audio_filters += format!("asetrate=48000*{}", settings.output_timescale).as_str();
+            if settings.timescale.adjust_audio_pitch {
+                audio_filters += format!("asetrate=48000*{}", settings.timescale.output).as_str();
             } else {
                 // atempo: speed up without changing pitch
-                audio_filters += format!("atempo={}", settings.output_timescale).as_str();
+                audio_filters += format!("atempo={}", settings.timescale.output).as_str();
             }
         }
 
@@ -218,20 +217,25 @@ impl Rendering {
             ffmpeg_command.push(formatted_audio.as_str());
         }
 
-        let quality = &settings.quality.to_string();
-        if settings.custom_ffmpeg_filters != "~" && !settings.custom_ffmpeg_filters.is_empty() {
-            ffmpeg_command.push(&settings.custom_ffmpeg_filters);
+        let quality = &settings.encoding.quality.to_string();
+        let custom_ffmpeg = settings
+            .advanced
+            .encoding
+            .custom_ffmpeg_filters
+            .unwrap_or_else(|| String::from("~"));
+        if custom_ffmpeg != String::from("~") {
+            ffmpeg_command.push(&custom_ffmpeg);
         } else {
             // video format
-            if settings.gpu {
-                if settings.gpu_type.to_lowercase() == "nvidia" {
+            if settings.advanced.encoding.gpu {
+                if settings.advanced.encoding.gpu_type.to_lowercase() == "nvidia" {
                     ffmpeg_command.push("-c:v");
                     ffmpeg_command.push("h264_nvenc");
                     ffmpeg_command.push("-preset");
                     ffmpeg_command.push("p7");
                     ffmpeg_command.push("-qp");
                     ffmpeg_command.push(quality);
-                } else if settings.gpu_type.to_lowercase() == "amd" {
+                } else if settings.advanced.encoding.gpu_type.to_lowercase() == "amd" {
                     ffmpeg_command.push("-c:v");
                     ffmpeg_command.push("h264_amf");
                     ffmpeg_command.push("-qp_i");
@@ -242,7 +246,7 @@ impl Rendering {
                     ffmpeg_command.push(quality);
                     ffmpeg_command.push("-quality");
                     ffmpeg_command.push("quality");
-                } else if settings.gpu_type.to_lowercase() == "intel" {
+                } else if settings.advanced.encoding.gpu_type.to_lowercase() == "intel" {
                     ffmpeg_command.append(&mut vec![
                         "-c:v",
                         "h264_qsv",
@@ -273,16 +277,19 @@ impl Rendering {
         }
 
         // output
-        let outfile = if settings.detailed_filenames && settings.interpolate && settings.blur {
+        let outfile = if settings.encoding.detailed_filename
+            && settings.interpolation.enabled
+            && settings.blending.enabled
+        {
             change_file_name(
                 output_path,
                 format!(
                     "{}-{}fps-{}~{}fps-{}",
                     output_path.file_stem().unwrap().to_str().unwrap(),
-                    settings.interpolated_fps,
-                    settings.interpolation_program,
-                    settings.blur_output_fps,
-                    settings.blur_amount
+                    settings.interpolation.fps,
+                    settings.advanced.interpolation.program,
+                    settings.blending.output_fps,
+                    settings.blending.amount
                 )
                 .as_str(),
             )

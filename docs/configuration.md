@@ -6,7 +6,7 @@ permalink: /docs/configuration
 
 # Configuration of Teres
 
-When first run it creates a config file in the `.config/teres/` folder. `C:/users/user/.config/teres/config.yml` for example for windows which allows you to change the settings for the interpolation and enconding processes
+When first run it creates a config file in the `.config/teres/` folder. `C:/users/user/.config/teres/teres.toml` for example for windows which allows you to change the settings for the interpolation and enconding processes
 
 ## Options
 
