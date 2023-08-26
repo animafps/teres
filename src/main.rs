@@ -5,6 +5,7 @@ mod helpers;
 mod rendering;
 mod script_handler;
 mod teres;
+mod vapoursynth;
 use human_panic::setup_panic;
 
 #[macro_use]

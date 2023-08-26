@@ -67,11 +67,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
         }
         diag_files?
     } else {
-        let input = cli_args.input;
-        input
-            .iter()
-            .map(|file| std::path::Path::new(file).to_path_buf())
-            .collect()
+        cli_args.input
     };
 
     for video in files {
@@ -79,7 +75,7 @@ pub fn run(cli_args: Cli) -> Option<()> {
             error!("Video {} does not exist", video.display());
             exit(exitcode::NOINPUT);
         }
-        let render = rendering::Render::new(video);
+        let render = rendering::Render::new(video, cli_args.stdout);
         rendering.queue_render(render?)
     }
 

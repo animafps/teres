@@ -49,30 +49,28 @@ pub fn clean_temp(videos: Vec<Render>) {
 }
 
 pub fn exec(ffmpeg_settings: CommandWithArgs, pb: ProgressBar) -> ExitStatus {
-    let vspipe = Command::new(ffmpeg_settings.vspipe_exe)
+    let mut vspipe = Command::new(ffmpeg_settings.vspipe_exe)
         .args(ffmpeg_settings.vspipe_args)
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
         .spawn()
         .expect("Failed to start vspipe process");
-
+    let vspipe_stdout = vspipe.stdout.take().expect("Failed to open vspipe stdout");
     let ffmpeg = Command::new(ffmpeg_settings.ffmpeg_exe)
         .args(ffmpeg_settings.ffmpeg_args)
-        .stdin(Stdio::from(
-            vspipe.stdout.expect("Failed to open vspipe stdout"),
-        ))
+        .stdin(Stdio::from(vspipe_stdout))
         .spawn()
         .expect("Failed to start ffmpeg process");
 
     debug!("Spawned subprocesses");
-
-    progress(vspipe.stderr.unwrap(), pb);
-
+    if !std::io::stderr().is_terminal() {
+        progress(vspipe.stderr.take().unwrap(), pb);
+    }
+    vspipe.wait().unwrap();
     ffmpeg.wait_with_output().unwrap().status
 }
 
 pub fn exit(status_code: i32) {
-    if std::io::stdin().is_terminal() {
+    if !std::io::stdout().is_terminal() {
         eprintln!();
         let mut stdout = io::stderr();
 
@@ -90,14 +88,12 @@ pub fn exit(status_code: i32) {
 fn progress(stderr: ChildStderr, progress: ProgressBar) {
     let mut read_frames = false;
     let frame_regex = Regex::new(r"Frame: (?P<current>\d+)/(?P<total>\d+)").unwrap();
-    let output_regex = Regex::new(r"Output").unwrap();
     let mut buf = BufReader::new(stderr);
-
     loop {
         let mut byte_vec = vec![];
         buf.read_until(b'\r', &mut byte_vec).expect("stderr Error");
         let string = String::from_utf8_lossy(&byte_vec);
-        if output_regex.is_match(&string) {
+        if byte_vec.is_empty() {
             break;
         }
         let caps;

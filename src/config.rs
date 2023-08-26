@@ -1,4 +1,4 @@
-use dirs::home_dir;
+use dirs::config_dir;
 use std::{fs, io::Read};
 
 use serde::{Deserialize, Serialize};
@@ -33,7 +33,7 @@ pub struct Interpolation {
 pub struct Encoding {
     pub quality: i32,
     pub detailed_filename: bool,
-    pub container: String
+    pub container: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -62,7 +62,7 @@ pub struct AdvancedEncoding {
     pub gpu: bool,
     pub gpu_type: String,
     pub deduplicate: bool,
-    pub custom_ffmpeg_filters: Option<String>,
+    pub custom_ffmpeg_filters: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -82,10 +82,11 @@ pub struct AdvancedInterpolation {
 
 impl Config {
     pub fn parse() -> Config {
-        let filepath = home_dir().unwrap();
-        let config_file = filepath.join(".config/teres/teres.toml");
+        let filepath = config_dir().unwrap();
+        let config_file = filepath.join("teres/teres.toml");
         if !config_file.exists() {
             Config::create(&config_file);
+            trace!("Created config file at: {}", config_file.display());
         }
 
         let mut f = std::fs::File::open(config_file).expect("Could not open file.");
@@ -93,13 +94,17 @@ impl Config {
         f.read_to_string(&mut contents)
             .expect("Could not parse config file to string");
         let scrape_config: Config = toml::from_str(&contents).expect("Could not read values.");
+        trace!("{:?}", scrape_config);
         scrape_config
     }
 
     pub fn create(filepath: &std::path::Path) {
         let prefix = filepath.parent().unwrap();
         std::fs::create_dir_all(prefix).unwrap();
-        fs::write(filepath, String::from("# Teres Configuration
+        fs::write(
+            filepath,
+            String::from(
+                "# Teres Configuration
 # For documentation for what each value means and the accecpted values see
 # https://animafps.github.io/teres/docs/configuration
 
@@ -142,7 +147,9 @@ bound = [0, 2]
 program = \"svp\" # svp/rife/rife-ncnn
 speed = \"default\" # medium/fast/faster/default (default is medium)
 tuning = \"default\" # film/animation/weak/smooth/default (default is smooth)
-algorithm = \"default\" # 2/13/23/default (default is 13)"))
-            .expect("Failed to create config file")
+algorithm = \"default\" # 2/13/23/default (default is 13)",
+            ),
+        )
+        .expect("Failed to create config file")
     }
 }

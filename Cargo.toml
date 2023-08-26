@@ -11,31 +11,35 @@ license = "GPL-3.0-or-later"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
-dirs = "4.0.0"
-rand = "0.8.5" 
+dirs = "5.0"
+rand = "0.8"
 serde = { version = "1.0", features = ["derive"] }
-human-panic = "1.0.3"
-rfd = "0.10.0"
-indicatif = { version = "0.17.2", features = ["improved_unicode"] }
-regex = "1.7.0"
-ctrlc = "3.2.4"
+human-panic = "1.0"
+rfd = "0.11"
+indicatif = { version = "0.17", features = ["improved_unicode"] }
+regex = "1.7"
+ctrlc = "3.2"
 winconsole = "0.11"
-exitcode = "1.1.2"
-clap-verbosity-flag = "2.0.0"
+exitcode = "1.1"
+clap-verbosity-flag = "2.0"
 log = "0.4"
-env_logger = "0.10.0"
+env_logger = "0.10"
 wild = "2"
-is-terminal = "0.4.2"
-toml = "0.5"
+is-terminal = "0.4"
+toml = "0.7"
+rustsynth = { git = "https://github.com/animafps/rustsynth" }
+rustsynth-derive = { path = "../rustsynth/rustsynth-derive" }
+anyhow = "1.0"
+num-rational = "0.4"
 
 [build-dependencies]
 clap_mangen = "0.2"
 clap = { version = "4.0", features = ["derive"] }
-clap-verbosity-flag = "2.0.0"
+clap-verbosity-flag = "2.0"
 
 [dev-dependencies]
-assert_cmd = "2.0.7"
-predicates = "2.1.5"
+assert_cmd = "2.0"
+predicates = "3.0"
 
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1"

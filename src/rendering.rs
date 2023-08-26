@@ -2,8 +2,14 @@ use crate::config::Config;
 use crate::helpers::{self, change_file_name, clean, exec};
 use crate::script_handler::create;
 use crate::teres::{create_temp_path, used_installer};
+use crate::vapoursynth::output::output;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error};
+use rustsynth::core::CoreCreationFlags;
+use rustsynth::core::CoreRef;
+use rustsynth::node::Node;
+use rustsynth::vsscript::Environment;
+use rustsynth_derive::init_plugins;
 use std::path::{Path, PathBuf};
 use std::vec::Vec;
 
@@ -17,10 +23,11 @@ pub struct Render {
     output_filepath: PathBuf,
 
     settings: Config,
+    pub stdout: bool,
 }
 
 impl Render {
-    pub fn new(input_path: PathBuf) -> Option<Render> {
+    pub fn new(input_path: PathBuf, stdout: bool) -> Option<Render> {
         let video_folder = input_path.parent()?.to_path_buf();
         let video_path = input_path;
 
@@ -28,7 +35,10 @@ impl Render {
 
         let input_filename = video_path.file_name()?.to_str()?.to_string();
         let settings = Config::parse();
-        let output_filepath = video_folder.join(format!("{}_blur.{}", video_name, settings.encoding.container));
+        let output_filepath = video_folder.join(format!(
+            "{}_blur.{}",
+            video_name, settings.encoding.container
+        ));
         let temp_path = create_temp_path(video_folder.clone()).unwrap();
         let script_path = create(temp_path, &video_path, settings.clone());
 
@@ -39,6 +49,7 @@ impl Render {
             output_filepath,
             script_path,
             settings,
+            stdout,
         })
     }
 }
@@ -72,6 +83,10 @@ impl Rendering {
     }
 
     pub fn render_videos(&mut self) {
+        let core = CoreRef::new(CoreCreationFlags::NONE);
+
+        init_plugins!();
+
         if self.renders_queued {
             for render in self.queue.iter() {
                 eprintln!("Processing {}", render.input_filename);
@@ -91,14 +106,11 @@ impl Rendering {
                         )
                         .unwrap(),
                 );
-                Rendering::render_video(
-                    output_filepath,
-                    settings,
-                    video_path,
-                    script_path,
-                    progress,
-                )
-                .expect("Render thread failed");
+                let clip = Plugins::ffms2::Source(&core, video_path.to_str().unwrap().to_owned())
+                    .get_node("clip")
+                    .unwrap();
+                Rendering::render_node(clip, output_filepath, settings, progress, render.stdout)
+                    .expect("Render thread failed");
             }
             self.queue.clear();
             self.renders_queued = false;
@@ -111,6 +123,7 @@ impl Rendering {
         video_path: PathBuf,
         script_path: PathBuf,
         progress_bar: ProgressBar,
+        stdout: bool,
     ) -> Result<(), std::io::Error> {
         let video_clone = video_path.clone();
 
@@ -119,6 +132,7 @@ impl Rendering {
             &video_clone,
             &output_filepath,
             settings,
+            stdout,
         )?;
 
         debug!(
@@ -151,6 +165,7 @@ impl Rendering {
         video_path: &Path,
         output_path: &Path,
         settings: Config,
+        stdout: bool,
     ) -> Result<CommandWithArgs, std::io::Error> {
         let mut vspipe_path = "vspipe";
         let mut ffmpeg_path = "ffmpeg";
@@ -218,13 +233,8 @@ impl Rendering {
         }
 
         let quality = &settings.encoding.quality.to_string();
-        let custom_ffmpeg = settings
-            .advanced
-            .encoding
-            .custom_ffmpeg_filters
-            .unwrap_or_else(|| String::from("~"));
-        if custom_ffmpeg != String::from("~") {
-            ffmpeg_command.push(&custom_ffmpeg);
+        let custom_ffmpeg = settings.advanced.encoding.custom_ffmpeg_filters;
+        if custom_ffmpeg.is_some() {
         } else {
             // video format
             if settings.advanced.encoding.gpu {
@@ -256,17 +266,17 @@ impl Rendering {
                         "veryslow",
                     ]);
                 }
-            } else {
+            } else if !stdout {
                 ffmpeg_command.append(&mut vec![
                     "-c:v",
                     "libx264",
-                    "-pix_fmt",
-                    "yuv420p",
                     "-preset",
                     "superfast",
                     "-crf",
                     quality,
                 ]);
+            } else {
+                ffmpeg_command.append(&mut vec!["-c:v", "rawvideo"])
             }
 
             // audio format
@@ -295,6 +305,9 @@ impl Rendering {
             )
             .display()
             .to_string()
+        } else if stdout {
+            ffmpeg_command.append(&mut vec!["-f", "nut"]);
+            String::from("-")
         } else {
             output_path.display().to_string()
         };
@@ -311,5 +324,14 @@ impl Rendering {
 
             output_filename: outfile,
         })
+    }
+    pub fn render_node(
+        clip: Node,
+        output_filepath: PathBuf,
+        settings: Config,
+        progress_bar: ProgressBar,
+        stdout: bool,
+    ) -> Result<(), std::io::Error> {
+        return Ok(());
     }
 }

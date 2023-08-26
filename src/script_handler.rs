@@ -41,7 +41,7 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
         )
         .as_str();
         script += "video = core.fmtc.matrix(clip=video, mat=\"709\", col_fam=vs.YUV, bits=16)\n";
-        script += "video = core.fmtc.resample(clip=video, css\"420\")\n";
+        script += "video = core.fmtc.resample(clip=video, css\"444\")\n";
         script += "video = core.fmtc.bitdepth(clip=video, bits=8)\n";
     }
 
@@ -55,17 +55,19 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
 
     if settings.interpolation.enabled {
         if settings.advanced.interpolation.program == "rife" {
-            script += "video = core.resize.Bicubic(video, format=vs.RGBS, matrix_in_s=\"709\")\n";
-            script += format!("while video.fps < {}:\n", settings.interpolation.fps).as_str();
-            script += "    video = RIFE(video)\n";
-            script += "video = core.resize.Bicubic(video, format=vs.YUV420P8, matrix_s=\"709\")\n"
+            script += "video = core.resize.Bicubic(video, format=vs.RGBS)\n";
+            script += &format!(
+                "video = RIFE(video, fps_den=1, fps_num={})\n",
+                settings.interpolation.fps
+            );
+            script += "video = core.resize.Bicubic(video, format=vs.YUV444P8, matrix_s=\"709\")\n"
         } else if settings.advanced.interpolation.program == "rife-ncnn" {
             script += "video = core.resize.Bicubic(video, format=vs.RGBS, matrix_in_s=\"709\")\n";
 
             script += format!("while video.fps < {}:\n", settings.interpolation.fps).as_str();
             script += "    video = core.rife.RIFE(video)\n";
 
-            script += "video = core.resize.Bicubic(video, format=vs.YUV420P8, matrix_s=\"709\")\n"
+            script += "video = core.resize.Bicubic(video, format=vs.YUV444P8, matrix_s=\"709\")\n"
         } else {
             let mut speed = settings.advanced.interpolation.speed;
             if speed.to_lowercase() == "default" {
