@@ -1,7 +1,7 @@
 [package]
 name = "teres"
 description = ""
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 repository = "https://github.com/animafps/teres"
 authors = ["Anima <contact@animafps.xyz>"]
@@ -12,7 +12,7 @@ license = "GPL-3.0-or-later"
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
 dirs = "4.0.0"
-rand = "0.8.5" 
+rand = "0.8.5"
 serde = { version = "1.0", features = ["derive"] }
 human-panic = "1.0.3"
 rfd = "0.10.0"

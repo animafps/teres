@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.4] - 2023-09-02
+
+### Documentation
+
+- Added gif comparison
+
+### Miscellaneous Tasks
+
+- V0.3.3
+
+### Styling
+
+- Formatting
+
 ## [0.3.3] - 2023-01-05
 
 ### Bug Fixes
