@@ -39,7 +39,7 @@ pub struct Encoding {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Timescale {
     pub input: f32,
-    pub output: f32,
+    pub output: f32,as saying cuz of dependencies being really annoying
     pub adjust_audio_pitch: bool,
 }
 
@@ -116,7 +116,7 @@ fps = 480.0
 [encoding]
 quality = 18
 detailed_filename = false
-container = mp4
+container = \"mp4\"
 
 [timescale]
 input = 1.0
