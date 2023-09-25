@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.5] - 2023-09-26
+
+### Bug Fixes
+
+- Fixed formatting of output container in config
+- Removed erroneous code that stopped compilation
+
 ## [0.3.4] - 2023-09-02
 
 ### Documentation
