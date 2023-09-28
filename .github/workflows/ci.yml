@@ -206,8 +206,9 @@ jobs:
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1
         with:
           command: deb
-      - run: PKG_VERSION=$(cat Cargo.toml | grep -oP "^version = \"\K[\d.\d.\d]+(?=\")")
+      - id: pkg_ver
+        run: echo "ver=$(cat Cargo.toml | grep -oP '^version = \"\K[\d.\d.\d]+(?=\")')" >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3
         with:
           name: linux_x86_64_deb
-          path: target/debian/teres_${PKG_VERSION}_amd64.deb
+          path: target/debian/teres_${{ steps.pkg_ver.outputs.ver }}_amd64.deb
