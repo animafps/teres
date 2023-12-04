@@ -40,10 +40,10 @@ pub fn create(temp_path: PathBuf, video_path: &Path, settings: Config) -> PathBu
                 .replace('\\', "\\\\")
         )
         .as_str();
-        script += "video = core.fmtc.matrix(clip=video, mat=\"709\", col_fam=vs.YUV, bits=16)\n";
-        script += "video = core.fmtc.resample(clip=video, css\"420\")\n";
-        script += "video = core.fmtc.bitdepth(clip=video, bits=8)\n";
     }
+    script += "video = core.fmtc.matrix(clip=video, mat=\"709\", col_fam=vs.YUV, bits=16)\n";
+    script += "video = core.fmtc.resample(clip=video, css\"420\")\n";
+    script += "video = core.fmtc.bitdepth(clip=video, bits=8)\n";
 
     if settings.timescale.input != 1.0 {
         script += format!(
