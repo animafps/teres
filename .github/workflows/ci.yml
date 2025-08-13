@@ -11,11 +11,11 @@ jobs:
     name: Build Windows Binary
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           toolchain: stable
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -28,7 +28,7 @@ jobs:
         with:
           command: build
           args: --release --all-features
-      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3
+      - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3
         with:
           name: win_x86_64_binary
           path: target/release/teres.exe
@@ -37,14 +37,14 @@ jobs:
     name: Build Linux Binary
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
       - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           toolchain: stable
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -57,7 +57,7 @@ jobs:
         with:
           command: build
           args: --release --all-features
-      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3
+      - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3
         with:
           name: linux_x86_64_binary
           path: target/release/teres
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -77,7 +77,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -107,7 +107,7 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -133,7 +133,7 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Build vapoursynth
         run: |
           sudo apt-get update
@@ -160,7 +160,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Install build dependencies
         run: |
           sudo apt update && sudo apt-get install -y libgtk-4-dev build-essential libgtk-3-dev
@@ -188,7 +188,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions/cache@c17f4bf4666a8001b1a45c09eb7a485c41aa64c3 # v3
+      - uses: actions/cache@2f8e54208210a422b2efd51efaa6bd6d7ca8920f # v3
         with:
           path: |
             ~/.cargo/bin/
@@ -208,7 +208,7 @@ jobs:
           command: deb
       - id: pkg_ver
         run: echo "ver=$(cat Cargo.toml | grep -oP '^version = \"\K[\d.\d.\d]+(?=\")')" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3
+      - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3
         with:
           name: linux_x86_64_deb
           path: target/debian/teres_${{ steps.pkg_ver.outputs.ver }}_amd64.deb
