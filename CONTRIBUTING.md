@@ -1,4 +1,8 @@
-## Install dev environment or manual install
+# Contributing to Teres
+
+We welcome contributions to Teres! This guide will help you get started.
+
+## Development Setup
 
 ### Requirements
 - [Python](https://www.python.org/downloads)
@@ -23,11 +27,77 @@
 8. Install [weighting.py](https://raw.githubusercontent.com/f0e/blur/master/plugins/weighting.py) and [filldrops.py](https://github.com/f0e/blur/blob/master/plugins/filldrops.py) to "%appdata%/Roaming/Python/Python{your python version}/site-packages"
 
 
+### Building from Source
+
+After installing the requirements above:
+
+```bash
+# Clone the repository
+git clone https://github.com/animafps/teres.git
+cd teres
+
+# Build the project
+cargo build --release
+
+# Run tests
+cargo test
+```
+
 ### Documentation Environment
 
-See [jekyll docs](https://jekyllrb.com/docs/)
+For working on documentation:
 
-## Guidelines for code
+```bash
+# Install Jekyll dependencies
+bundle install
 
-- Format with `cargo fmt`
-- Follow all guidelines of https://clig.dev
+# Serve documentation locally
+bundle exec jekyll serve
+```
+
+See [jekyll docs](https://jekyllrb.com/docs/) for more information.
+
+## Development Guidelines
+
+### Code Style
+
+- Format code with `cargo fmt` before submitting
+- Run `cargo clippy` to check for common mistakes
+- Follow [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
+- Follow CLI guidelines from https://clig.dev
+
+### Commit Messages
+
+- Use conventional commit format: `type(scope): description`
+- Examples: `feat: add new blur weighting function`, `fix: resolve memory leak in interpolation`
+
+### Pull Requests
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-new-feature`
+3. Make your changes and test thoroughly
+4. Run `cargo fmt` and `cargo clippy`
+5. Commit your changes with clear messages
+6. Push to your fork and submit a pull request
+
+### Testing
+
+- Add tests for new functionality
+- Ensure all tests pass: `cargo test`
+- Test on multiple platforms if possible
+
+## Reporting Issues
+
+When reporting bugs, please include:
+
+- Teres version (`teres --version`)
+- Operating system and version
+- Steps to reproduce the issue
+- Expected vs actual behavior
+- Log output (use `-v` flag for verbose logs)
+
+## Getting Help
+
+- Join our [Discord server](https://discord.gg/5z3YhWstQr)
+- Check existing [GitHub issues](https://github.com/animafps/teres/issues)
+- Read the [documentation](https://animafps.github.io/teres/)
