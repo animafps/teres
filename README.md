@@ -25,22 +25,40 @@
 - Interpolate video to higher framerate
 - Blur frames together for motion blur
 - Both CLI and a minimal GUI usage
-- Supports multiple videos simultatiously
+- Supports multiple videos simultaneously
 - Progress bar
 - Global configuration file
 - Multiple file queue
 
 ## Installing
 
-Use the packages in the repos above
+### Package Managers
 
-For manual installation, see [CONTRIBUTING.md](/CONTRIBUTING.md)
+Use the packages in the repos above for your distribution.
+
+### Pre-built Binaries
+
+Download the latest release from [GitHub Releases](https://github.com/animafps/teres/releases/latest).
+
+### Manual Installation
+
+For building from source, see [CONTRIBUTING.md](/CONTRIBUTING.md).
+
+## System Requirements
+
+- **Operating System**: Windows 10+, or Linux
+- **Dependencies**:
+  - [Python 3.7+](https://www.python.org/downloads)
+  - [FFmpeg](https://ffmpeg.org/download.html)
+  - [VapourSynth x64](https://www.vapoursynth.com)
+
+See [CONTRIBUTING.md](/CONTRIBUTING.md) for detailed dependency installation instructions.
 
 ## 🎈 Usage
 
 [**Support and development Discord**](https://discord.gg/5z3YhWstQr)
 
-Teres can be run from the command line or seperately
+Teres can be run from the command line or separately
 
 ### Non CLI
 
@@ -63,7 +81,31 @@ OPTIONS:
     -V, --version    Print version information
 ```
 
-For configuration options see [the docs](https://animafps.github.io/teres/docs/configuration)
+#### Examples
+
+```bash
+# Process a single video file
+teres input.mp4
+
+# Process multiple files
+teres video1.mp4 video2.mp4 video3.mp4
+
+# Process all MP4 files in current directory
+teres *.mp4
+
+# CLI mode with verbose output
+teres -n -v input.mp4
+```
+
+For configuration options see [the docs](https://animafps.github.io/teres/docs/configuration).
+
+## Troubleshooting
+
+### Getting Help
+
+- Join our [Discord server](https://discord.gg/5z3YhWstQr) for community support
+- Check [existing issues](https://github.com/animafps/teres/issues) on GitHub
+- For bugs, create a [new issue](https://github.com/animafps/teres/issues/new) with your log output
 
 ## ✨ Contributors
 

@@ -45,7 +45,7 @@ When first run it creates a config file in the `.config/teres/` folder. `C:/user
 
 - **brightness** - brightness of the output video
 - **saturation** - saturation of the output video
-- **contras**t - contrast of the output video
+- **contrast** - contrast of the output video
 
 ### advanced rendering
 
