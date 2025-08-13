@@ -29,7 +29,7 @@ is-terminal = "0.4.2"
 toml = "0.5"
 
 [build-dependencies]
-clap_mangen = "0.2"
+clap_mangen = "0.2.29"
 clap = { version = "4.0", features = ["derive"] }
 clap-verbosity-flag = "2.0.0"
 
