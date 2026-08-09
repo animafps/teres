@@ -260,8 +260,6 @@ impl Rendering {
                 ffmpeg_command.append(&mut vec![
                     "-c:v",
                     "libx264",
-                    "-pix_fmt",
-                    "yuv420p",
                     "-preset",
                     "superfast",
                     "-crf",
